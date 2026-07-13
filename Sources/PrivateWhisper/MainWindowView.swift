@@ -5,8 +5,18 @@ import SwiftUI
 struct MainWindowView: View {
     @ObservedObject var configStore: ConfigStore
     @ObservedObject var statsStore: StatsStore
+    @ObservedObject private var downloader = ModelDownloader.shared
 
     var body: some View {
+        VStack(spacing: 0) {
+            if !FileManager.default.fileExists(atPath: configStore.config.whisperModelPath.path) {
+                SetupBanner(configStore: configStore, downloader: downloader)
+            }
+            tabs
+        }
+    }
+
+    private var tabs: some View {
         TabView {
             StatisticsView(statsStore: statsStore)
                 .tabItem { Label("Statistics", systemImage: "chart.bar") }
@@ -16,6 +26,44 @@ struct MainWindowView: View {
                 .tabItem { Label("Settings", systemImage: "gearshape") }
         }
         .frame(width: 520, height: 600)
+    }
+}
+
+/// First-run setup: the transcription model isn't bundled with the app.
+private struct SetupBanner: View {
+    @ObservedObject var configStore: ConfigStore
+    @ObservedObject var downloader: ModelDownloader
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Label("Setup: transcription model required", systemImage: "arrow.down.circle")
+                .font(.headline)
+            Text("Private Whisper transcribes locally with Whisper \(configStore.config.whisperModel). The model isn't bundled — download it once (\(ModelDownloader.sources[configStore.config.whisperModel]?.size ?? "~1.5 GB")), everything stays on this Mac.")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+            if downloader.downloading {
+                ProgressView(value: downloader.progress) {
+                    Text(String(format: "Downloading… %.0f%%", downloader.progress * 100))
+                        .font(.caption)
+                }
+            } else {
+                HStack {
+                    Button("Download Model") {
+                        downloader.download(model: configStore.config.whisperModel)
+                    }
+                    .buttonStyle(.borderedProminent)
+                    if let error = downloader.errorMessage {
+                        Text(error).font(.caption).foregroundStyle(.red)
+                    }
+                }
+            }
+            Text("Optional, for polished text: install LM Studio (lmstudio.ai), get the model \"qwen/qwen3.5-4b\", enable the local server. Without it, dictation inserts the raw transcript.")
+                .font(.caption2)
+                .foregroundStyle(.tertiary)
+        }
+        .padding(14)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(.yellow.opacity(0.12))
     }
 }
 

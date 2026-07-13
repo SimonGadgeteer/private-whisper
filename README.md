@@ -41,6 +41,16 @@ The cleanup LLM doesn't have to run on this machine: in LM Studio on the Mac Min
 
 Config lives at `~/Library/Application Support/PrivateWhisper/config.json`.
 
+## Sharing / installing on another Mac
+
+```bash
+./scripts/package.sh     # → build/PrivateWhisper-<version>.dmg (+ SHA-256)
+```
+
+The DMG is small — models are NOT bundled. On first launch the app opens its window with a one-click **Download Model** setup (~1.5 GB from Hugging Face into `~/Library/Application Support/PrivateWhisper/models/`). LM Studio + `qwen/qwen3.5-4b` are optional (without them, raw transcripts are inserted); instructions ship in the DMG's READ ME FIRST.txt.
+
+Signing: the app is signed with a development certificate, so recipients must right-click → **Open** on first launch (or System Settings → Privacy & Security → **Open Anyway**). Gatekeeper-clean distribution requires a paid Apple Developer ID + notarization — hook it into scripts/package.sh when available.
+
 ## Headless test mode
 
 ```bash

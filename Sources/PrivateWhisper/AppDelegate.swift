@@ -51,6 +51,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         installCommandMonitor()
 
         Task { await self.requestPermissionsAndStart() }
+
+        // First run without the whisper model → surface setup immediately.
+        if !FileManager.default.fileExists(atPath: configStore.config.whisperModelPath.path) {
+            showMainWindow()
+        }
     }
 
     private func requestPermissionsAndStart() async {

@@ -43,6 +43,11 @@ final class PipelineController {
 
     /// Loads the whisper model in the background so the first dictation is fast.
     func preloadModel() {
+        // Not downloaded yet → the setup banner handles it; stay quiet here.
+        guard FileManager.default.fileExists(atPath: configStore.config.whisperModelPath.path) else {
+            dlog("preload skipped: model not downloaded yet")
+            return
+        }
         let transcriber = currentTranscriber()
         Task.detached(priority: .userInitiated) {
             do {
