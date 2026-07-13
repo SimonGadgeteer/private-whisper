@@ -8,10 +8,12 @@ final class AudioRecorder {
     private let targetFormat = AVAudioFormat(
         commonFormat: .pcmFormatFloat32, sampleRate: 16000, channels: 1, interleaved: false)!
 
-    private var converter: AVAudioConverter?
     private var samples: [Float] = []
     private let lock = NSLock()
     private(set) var isRecording = false
+    /// Incremented per recording session; late tap callbacks from a previous
+    /// session are dropped so they can't bleed samples into the next one.
+    private var session = 0
 
     /// Selects the capture device. nil = system default.
     func setInputDevice(uid: String?) {
@@ -24,9 +26,12 @@ final class AudioRecorder {
     }
 
     func start(deviceUID: String?) throws {
-        guard !isRecording else { return }
+        if isRecording { _ = stop() } // never stack sessions / leave a hot mic
+
         lock.lock()
         samples.removeAll(keepingCapacity: true)
+        session += 1
+        let currentSession = session
         lock.unlock()
 
         setInputDevice(uid: deviceUID)
@@ -36,11 +41,16 @@ final class AudioRecorder {
             throw NSError(domain: "LocalDictation", code: 1, userInfo: [
                 NSLocalizedDescriptionKey: "No usable input device (sample rate 0)."])
         }
-        converter = AVAudioConverter(from: format, to: targetFormat)
+        // The converter is owned by the tap closure (captured by value): the
+        // realtime tap thread never reads shared mutable state.
+        guard let converter = AVAudioConverter(from: format, to: targetFormat) else {
+            throw NSError(domain: "LocalDictation", code: 2, userInfo: [
+                NSLocalizedDescriptionKey: "Cannot convert \(format) to 16 kHz mono."])
+        }
 
         input.removeTap(onBus: 0)
         input.installTap(onBus: 0, bufferSize: 4096, format: format) { [weak self] buffer, _ in
-            self?.append(buffer)
+            self?.append(buffer, converter: converter, session: currentSession)
         }
         engine.prepare()
         try engine.start()
@@ -57,8 +67,7 @@ final class AudioRecorder {
         return samples
     }
 
-    private func append(_ buffer: AVAudioPCMBuffer) {
-        guard let converter else { return }
+    private func append(_ buffer: AVAudioPCMBuffer, converter: AVAudioConverter, session: Int) {
         let ratio = targetFormat.sampleRate / buffer.format.sampleRate
         let capacity = AVAudioFrameCount(Double(buffer.frameLength) * ratio) + 16
         guard let out = AVAudioPCMBuffer(pcmFormat: targetFormat, frameCapacity: capacity) else { return }
@@ -77,7 +86,9 @@ final class AudioRecorder {
         guard error == nil, let channel = out.floatChannelData?[0] else { return }
         let count = Int(out.frameLength)
         lock.lock()
-        samples.append(contentsOf: UnsafeBufferPointer(start: channel, count: count))
+        if session == self.session {
+            samples.append(contentsOf: UnsafeBufferPointer(start: channel, count: count))
+        }
         lock.unlock()
     }
 }

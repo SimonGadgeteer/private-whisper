@@ -1,0 +1,54 @@
+[
+  {
+    "id": "en-1",
+    "language": "en",
+    "raw": "Um, so I think we should, uh, schedule the meeting for for next Tuesday, you know, and and invite the whole team to discuss the the budget numbers."
+  },
+  {
+    "id": "en-2",
+    "language": "en",
+    "raw": "Okay so basically the the deployment failed because, um, because the config file was, uh, was missing the API endpoint, you know what I mean, so we need to we need to fix that before the release on Friday."
+  },
+  {
+    "id": "en-3",
+    "language": "en",
+    "raw": "Hi Sarah, um, quick update, the customer in in Geneva confirmed the order, uh, forty five thousand francs, delivery in calendar week twelve, so please, um, please prepare the the invoice."
+  },
+  {
+    "id": "de-1",
+    "language": "de",
+    "raw": "Also ich denke, wir sollten das Meeting äh auf nächsten Dienstag verschieben, also verschieben, und das ganze Team einladen, um die die Budgetzahlen zu besprechen."
+  },
+  {
+    "id": "de-2",
+    "language": "de",
+    "raw": "Ähm, guten Morgen Herr Müller, also bezüglich äh bezüglich dem Angebot vom 15. März, wir können die Lieferung äh erst in Kalenderwoche 14 machen, also nicht wie besprochen in Woche 12, das wollte ich Ihnen nur äh nur kurz mitteilen."
+  },
+  {
+    "id": "de-3",
+    "language": "de",
+    "raw": "Also die Präsentation für äh für den Kunden ist soweit fertig, ähm, ich schicke sie dir heute Abend, und äh kannst du bitte nochmal die Zahlen auf Folie sieben prüfen, die kommen mir komisch vor."
+  },
+  {
+    "id": "ch-1",
+    "language": "de",
+    "note": "Swiss German dialect as whisper renders it: Standard German with Helvetisms — must stay German, Helvetisms preserved",
+    "raw": "Also gäll, ich han äh ich habe das Auto vor dem Geschäft parkiert, ähm, und dann bin ich schnell mit dem Velo zur Migros gefahren, um äh um es bitzli was zum Zmittag zu holen, oder."
+  },
+  {
+    "id": "ch-2",
+    "language": "de",
+    "note": "Swiss business dictation with Swiss number/currency formats",
+    "raw": "Ähm also, der Offerte für die Firma Brunner in äh in Winterthur, da müssen wir äh den Preis anpassen, zwölftausendfünfhundert Franken statt äh statt dreizehntausend, und merci vielmal fürs Nachschauen, gäll."
+  },
+  {
+    "id": "fr-1",
+    "language": "fr",
+    "raw": "Alors, euh, je pense qu'on devrait reporter la réunion à mardi prochain, euh, et inviter toute l'équipe pour discuter des des chiffres du budget."
+  },
+  {
+    "id": "fr-2",
+    "language": "fr",
+    "raw": "Bonjour Madame Rochat, euh, alors concernant la la livraison pour Lausanne, bah on peut confirmer le le quinze avril, euh, avec un montant de de huit mille cinq cents francs, voilà, merci beaucoup."
+  }
+]

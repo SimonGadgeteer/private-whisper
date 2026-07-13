@@ -34,13 +34,17 @@ final class HotkeyMonitor {
     func stop() {
         for monitor in monitors { NSEvent.removeMonitor(monitor) }
         monitors.removeAll()
-        isDown = false
+        // Keep the press/release pairing intact if the key is held during a
+        // hotkey change: fire the release so a recording never gets stuck.
+        if isDown {
+            isDown = false
+            onRelease?()
+        }
     }
 
     private func handle(_ event: NSEvent) {
         guard event.keyCode == choice.keyCode else { return }
-        let flag = modifierFlag(for: choice)
-        let down = event.modifierFlags.contains(flag)
+        let down = isChosenKeyDown(in: event)
         if down && !isDown {
             isDown = true
             onPress?()
@@ -50,11 +54,16 @@ final class HotkeyMonitor {
         }
     }
 
-    private func modifierFlag(for choice: HotkeyChoice) -> NSEvent.ModifierFlags {
+    /// Uses the device-dependent flag bits so left/right variants of the same
+    /// modifier are distinguished — the generic .option flag stays set when
+    /// the *other* Option key is still held, which would swallow the release.
+    private func isChosenKeyDown(in event: NSEvent) -> Bool {
+        let raw = event.modifierFlags.rawValue
         switch choice {
-        case .rightOption, .leftOption: return .option
-        case .rightCommand: return .command
-        case .fnKey: return .function
+        case .leftOption: return raw & UInt(NX_DEVICELALTKEYMASK) != 0
+        case .rightOption: return raw & UInt(NX_DEVICERALTKEYMASK) != 0
+        case .rightCommand: return raw & UInt(NX_DEVICERCMDKEYMASK) != 0
+        case .fnKey: return event.modifierFlags.contains(.function)
         }
     }
 }

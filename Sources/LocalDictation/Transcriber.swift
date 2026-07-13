@@ -42,6 +42,11 @@ enum TranscriberError: Error, LocalizedError {
 actor WhisperCppTranscriber: Transcriber {
     private var ctx: OpaquePointer?
     private let modelPath: URL
+    /// Model load and whisper_full block for seconds — they run on this
+    /// dedicated queue instead of pinning a cooperative-pool thread. The queue
+    /// is serial, so the ctx is never used concurrently even across actor
+    /// reentrancy.
+    private let inferenceQueue = DispatchQueue(label: "LocalDictation.whisper", qos: .userInitiated)
 
     init(modelPath: URL) {
         self.modelPath = modelPath
@@ -52,24 +57,43 @@ actor WhisperCppTranscriber: Transcriber {
     }
 
     /// Loads the model into memory (idempotent).
-    func preload() throws {
+    func preload() async throws {
         guard ctx == nil else { return }
         guard FileManager.default.fileExists(atPath: modelPath.path) else {
             throw TranscriberError.modelNotFound(modelPath.path)
         }
-        var cparams = whisper_context_default_params()
-        cparams.use_gpu = true
-        cparams.flash_attn = true
-        guard let context = whisper_init_from_file_with_params(modelPath.path, cparams) else {
-            throw TranscriberError.initFailed
+        let path = modelPath.path
+        let context: OpaquePointer? = await withCheckedContinuation { continuation in
+            inferenceQueue.async {
+                var cparams = whisper_context_default_params()
+                cparams.use_gpu = true
+                cparams.flash_attn = true
+                continuation.resume(returning: whisper_init_from_file_with_params(path, cparams))
+            }
         }
+        guard let context else { throw TranscriberError.initFailed }
         ctx = context
     }
 
     func transcribe(samples: [Float]) async throws -> TranscriptionResult {
-        try preload()
+        try await preload()
         guard let ctx else { throw TranscriberError.initFailed }
 
+        let outcome: (status: Int32, text: String, language: String) =
+            await withCheckedContinuation { continuation in
+                inferenceQueue.async {
+                    continuation.resume(returning: Self.runInference(ctx: ctx, samples: samples))
+                }
+            }
+        guard outcome.status == 0 else { throw TranscriberError.inferenceFailed }
+
+        return TranscriptionResult(
+            text: Self.cleanRawTranscript(outcome.text), language: outcome.language)
+    }
+
+    private static func runInference(
+        ctx: OpaquePointer, samples: [Float]
+    ) -> (status: Int32, text: String, language: String) {
         var params = whisper_full_default_params(WHISPER_SAMPLING_GREEDY)
         params.print_progress = false
         params.print_realtime = false
@@ -87,7 +111,7 @@ actor WhisperCppTranscriber: Transcriber {
                 whisper_full(ctx, params, buf.baseAddress, Int32(buf.count))
             }
         }
-        guard status == 0 else { throw TranscriberError.inferenceFailed }
+        guard status == 0 else { return (status, "", "unknown") }
 
         var text = ""
         for i in 0..<whisper_full_n_segments(ctx) {
@@ -107,8 +131,7 @@ actor WhisperCppTranscriber: Transcriber {
 
         let langID = whisper_full_lang_id(ctx)
         let language = langID >= 0 ? String(cString: whisper_lang_str(langID)) : "unknown"
-
-        return TranscriptionResult(text: Self.cleanRawTranscript(text), language: language)
+        return (status, text, language)
     }
 
     /// Removes whisper artifacts like "[BLANK_AUDIO]", "(wind blowing)" and

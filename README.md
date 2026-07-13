@@ -1,0 +1,50 @@
+# Local Dictation
+
+Push-to-talk dictation for macOS, 100% local: hold **Right Option**, speak (English, German, Swiss German, French), release — polished text appears at the cursor of whatever app has focus.
+
+Pipeline: `AVAudioEngine` mic capture → **whisper.cpp** (Metal, embedded) → cleanup pass via **LM Studio** (local, OpenAI-compatible) → paste injection with pasteboard restore. No network egress; all endpoints are `localhost`.
+
+## Requirements
+
+- Apple Silicon Mac, macOS 15+
+- Whisper models in `~/Library/Application Support/LocalDictation/models/` (`ggml-large-v3-turbo.bin` and/or `ggml-large-v3.bin`, from [ggerganov/whisper.cpp on Hugging Face](https://huggingface.co/ggerganov/whisper.cpp)) — already downloaded on this machine
+- LM Studio running with the local server enabled on `http://localhost:1234/v1` (for the cleanup pass; without it the raw transcript is injected)
+
+## Build & run
+
+```bash
+./scripts/build_app.sh          # swift build + assemble + codesign
+open build/LocalDictation.app
+```
+
+On first launch, grant:
+
+1. **Microphone** — prompted automatically.
+2. **Accessibility** — needed for the global hotkey and for the Cmd+V injection. System Settings → Privacy & Security → Accessibility → enable Local Dictation. Relaunch the app after granting.
+
+## Usage
+
+- Hold **Right Option**, dictate, release. The menu-bar icon shows state: mic (idle) → red mic (recording) → hourglass (processing) → green check (inserted).
+- Yellow warning icon = cleanup fell back to the raw transcript (LM Studio down/slow) — your dictation is never lost.
+- No text field focused / password field → a HUD shows the text with a Copy button instead.
+- Menu bar → **Settings…** for hotkey, microphone, whisper model, LM Studio URL/model, cleanup toggle/timeout, history logging (default off), launch at login.
+
+Config lives at `~/Library/Application Support/LocalDictation/config.json`.
+
+## Headless test mode
+
+```bash
+./build/LocalDictation.app/Contents/MacOS/LocalDictation --test-file audio.wav [--no-cleanup]
+```
+
+Prints JSON with raw transcript, detected language, cleaned text, and timings. Used by the automated pipeline tests (`say`-synthesized EN/DE/FR audio).
+
+## Cleanup-model eval
+
+`evals/run_eval.py` scores candidate LM Studio models on multilingual dictation cleanup (language preservation incl. Helvetisms, filler removal, meaning/numbers preservation, latency), judged by a large local model. See `evals/` and DECISIONS.md for results.
+
+## Performance (M4 Max, measured)
+
+- Whisper large-v3-turbo, 10 s utterance: ~0.5 s transcription
+- Cleanup (qwen3-8b, warm): ~0.7 s
+- End-to-end after key release: **~1.5 s** (target was ≤ 3 s)

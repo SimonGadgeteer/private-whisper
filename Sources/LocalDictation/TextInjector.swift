@@ -62,6 +62,11 @@ enum TextInjector {
         return .textLikeOrUnknown
     }
 
+    /// Monotonic generation so only the latest scheduled restore runs when
+    /// dictations overlap within the restore window.
+    @MainActor private static var restoreGeneration = 0
+
+    @MainActor
     private static func paste(_ text: String) {
         let pasteboard = NSPasteboard.general
 
@@ -77,11 +82,18 @@ enum TextInjector {
 
         pasteboard.clearContents()
         pasteboard.setString(text, forType: .string)
+        let expectedChangeCount = pasteboard.changeCount
+        restoreGeneration += 1
+        let generation = restoreGeneration
 
         postCmdV()
 
         // Give the target app time to read the pasteboard before restoring.
+        // Skip the restore if anyone (the user copying, a newer dictation)
+        // wrote to the pasteboard in the meantime — never clobber newer content.
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+            guard generation == restoreGeneration,
+                  pasteboard.changeCount == expectedChangeCount else { return }
             pasteboard.clearContents()
             let items = snapshot.map { entry -> NSPasteboardItem in
                 let item = NSPasteboardItem()

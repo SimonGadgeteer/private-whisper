@@ -15,7 +15,6 @@ final class PipelineController {
 
     private var transcriber: WhisperCppTranscriber
     private var loadedModelPath: URL
-    private var recordingStartedAt: Date?
 
     init(configStore: ConfigStore, statusItem: StatusItemController, hud: HUDController) {
         self.configStore = configStore
@@ -34,6 +33,9 @@ final class PipelineController {
                 try await transcriber.preload()
             } catch {
                 await MainActor.run {
+                    // Don't clobber an in-flight recording state; the failure
+                    // will surface when the transcription itself errors.
+                    guard self.statusItem.state != .recording else { return }
                     self.statusItem.setState(.warning("Whisper model failed to load"))
                     self.hud.flash("Whisper model failed to load: \(error.localizedDescription)", seconds: 4)
                 }
@@ -52,13 +54,19 @@ final class PipelineController {
     }
 
     func hotkeyPressed() {
-        guard statusItem.state == .idle || statusItem.state == .injected else {
-            if statusItem.state == .processing { hud.flash("Still processing…") }
+        // Only .recording and .processing block a new dictation; transient
+        // states (.injected, .warning) must never lock out the hotkey.
+        switch statusItem.state {
+        case .recording:
             return
+        case .processing:
+            hud.flash("Still processing…")
+            return
+        case .idle, .injected, .warning:
+            break
         }
         do {
             try recorder.start(deviceUID: configStore.config.microphoneUID)
-            recordingStartedAt = Date()
             statusItem.setState(.recording)
         } catch {
             statusItem.setState(.warning("Microphone unavailable"))
@@ -67,7 +75,9 @@ final class PipelineController {
     }
 
     func hotkeyReleased() {
-        guard statusItem.state == .recording else { return }
+        // Keyed off the recorder, not the UI state: even if something clobbered
+        // the .recording state, the mic must never be left running.
+        guard recorder.isRecording else { return }
         let samples = recorder.stop()
         let audioSeconds = Double(samples.count) / 16000.0
 
