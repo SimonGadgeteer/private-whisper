@@ -24,46 +24,37 @@ private struct StatisticsView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 18) {
-                LazyVGrid(columns: [.init(.flexible()), .init(.flexible()), .init(.flexible())],
-                          spacing: 12) {
+            VStack(alignment: .leading, spacing: 16) {
+                // Hero: the number that makes dictation worth it.
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(timeSavedString)
+                        .font(.system(size: 34, weight: .bold, design: .rounded))
+                        .monospacedDigit()
+                    Text("saved vs. typing (est. 40 words/min)")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(16)
+                .background(.quaternary.opacity(0.5), in: RoundedRectangle(cornerRadius: 12))
+
+                LazyVGrid(columns: Array(repeating: .init(.flexible()), count: 4), spacing: 10) {
                     StatTile(value: "\(stats.totalDictations)", label: "Dictations")
                     StatTile(value: "\(stats.totalWords)", label: "Words")
-                    StatTile(value: minutesString(stats.totalAudioSeconds), label: "Audio dictated")
-                    StatTile(value: String(format: "%.1f s", stats.averageLatency),
-                             label: "Avg. latency")
-                    StatTile(value: wordsPerMinute, label: "Words/min speaking")
-                    StatTile(value: "\(stats.cleanupFallbacks)", label: "Cleanup fallbacks")
+                    StatTile(value: String(format: "%.1f s", stats.averageLatency), label: "Avg. latency")
+                    StatTile(value: wordsPerMinute, label: "Words/min")
+                }
+
+                GroupBox("Last 14 days") {
+                    DayColumnsChart(days: lastDays(14))
+                        .frame(height: 120)
+                        .padding(.top, 6)
                 }
 
                 if !stats.byLanguage.isEmpty {
                     GroupBox("Languages") {
-                        VStack(spacing: 6) {
-                            let total = max(1, stats.totalDictations)
-                            ForEach(stats.byLanguage.sorted { $0.value > $1.value }, id: \.key) { lang, count in
-                                BarRow(
-                                    label: languageName(lang),
-                                    count: count,
-                                    fraction: Double(count) / Double(total))
-                            }
-                        }
-                        .padding(.vertical, 4)
-                    }
-                }
-
-                if !stats.byDay.isEmpty {
-                    GroupBox("Last 14 days") {
-                        VStack(spacing: 6) {
-                            let days = lastDays(14)
-                            let maxCount = max(1, days.map(\.count).max() ?? 1)
-                            ForEach(days, id: \.day) { entry in
-                                BarRow(
-                                    label: entry.day.suffix(5).replacingOccurrences(of: "-", with: "."),
-                                    count: entry.count,
-                                    fraction: Double(entry.count) / Double(maxCount))
-                            }
-                        }
-                        .padding(.vertical, 4)
+                        LanguageShareBar(byLanguage: stats.byLanguage)
+                            .padding(.vertical, 6)
                     }
                 }
 
@@ -75,28 +66,134 @@ private struct StatisticsView: View {
         }
     }
 
+    private var timeSavedString: String {
+        // Typing the same words at ~40 wpm vs. the time actually spent
+        // speaking + waiting for the pipeline.
+        let typingMinutes = Double(stats.totalWords) / 40.0
+        let dictationMinutes = stats.totalAudioSeconds / 60.0
+            + (stats.totalTranscriptionSeconds + stats.totalCleanupSeconds) / 60.0
+        let saved = max(0, typingMinutes - dictationMinutes)
+        if saved < 1 { return String(format: "%.0f s", saved * 60) }
+        if saved < 90 { return String(format: "%.0f min", saved) }
+        return String(format: "%.1f h", saved / 60)
+    }
+
     private var wordsPerMinute: String {
         guard stats.totalAudioSeconds > 5 else { return "–" }
         return String(format: "%.0f", Double(stats.totalWords) / (stats.totalAudioSeconds / 60))
     }
 
-    private func minutesString(_ seconds: Double) -> String {
-        seconds < 120 ? String(format: "%.0f s", seconds) : String(format: "%.1f min", seconds / 60)
-    }
-
-    private func lastDays(_ n: Int) -> [(day: String, count: Int)] {
+    private func lastDays(_ n: Int) -> [DayCount] {
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd"
         formatter.timeZone = .current
+        let weekday = DateFormatter()
+        weekday.dateFormat = "EEEEE" // single-letter weekday
         return (0..<n).reversed().compactMap { offset in
             guard let date = Calendar.current.date(byAdding: .day, value: -offset, to: Date())
             else { return nil }
             let key = formatter.string(from: date)
-            return (key, stats.byDay[key] ?? 0)
+            return DayCount(
+                id: key,
+                weekdayLetter: weekday.string(from: date),
+                dayNumber: Calendar.current.component(.day, from: date),
+                count: stats.byDay[key] ?? 0,
+                isToday: offset == 0)
+        }
+    }
+}
+
+private struct DayCount: Identifiable {
+    let id: String
+    let weekdayLetter: String
+    let dayNumber: Int
+    let count: Int
+    let isToday: Bool
+}
+
+/// Vertical columns, baseline-anchored, rounded tops; value labels only on
+/// non-zero days; today at full tint.
+private struct DayColumnsChart: View {
+    let days: [DayCount]
+
+    var body: some View {
+        let maxCount = max(1, days.map(\.count).max() ?? 1)
+        HStack(alignment: .bottom, spacing: 6) {
+            ForEach(days) { day in
+                VStack(spacing: 4) {
+                    Text(day.count > 0 ? "\(day.count)" : "")
+                        .font(.system(size: 9, weight: .semibold).monospacedDigit())
+                        .foregroundStyle(.secondary)
+                        .frame(height: 10)
+                    UnevenRoundedRectangle(
+                        topLeadingRadius: 3, bottomLeadingRadius: 0,
+                        bottomTrailingRadius: 0, topTrailingRadius: 3)
+                        .fill(day.isToday ? AnyShapeStyle(.tint) : AnyShapeStyle(.tint.opacity(0.45)))
+                        .frame(height: day.count == 0
+                            ? 2
+                            : max(6, 62 * CGFloat(day.count) / CGFloat(maxCount)))
+                        .frame(maxHeight: 64, alignment: .bottom)
+                    Text(day.weekdayLetter)
+                        .font(.system(size: 9))
+                        .foregroundStyle(day.isToday ? .primary : .secondary)
+                    Text("\(day.dayNumber)")
+                        .font(.system(size: 8).monospacedDigit())
+                        .foregroundStyle(.tertiary)
+                }
+                .frame(maxWidth: .infinity)
+            }
+        }
+    }
+}
+
+/// One stacked share bar + legend chips. Hues are fixed per language (color
+/// follows the entity, never its rank); counts are always shown as text.
+private struct LanguageShareBar: View {
+    let byLanguage: [String: Int]
+
+    private static let hues: [String: Color] = [
+        "en": Color(red: 0.31, green: 0.65, blue: 1.0),
+        "de": Color(red: 0.62, green: 0.42, blue: 1.0),
+        "fr": Color(red: 1.0, green: 0.45, blue: 0.66),
+        "it": Color(red: 0.2, green: 0.78, blue: 0.65),
+    ]
+    private static let fallback = Color.gray
+
+    private var entries: [(code: String, count: Int)] {
+        byLanguage.sorted { $0.value == $1.value ? $0.key < $1.key : $0.value > $1.value }
+            .map { ($0.key, $0.value) }
+    }
+
+    var body: some View {
+        let total = max(1, entries.reduce(0) { $0 + $1.count })
+        VStack(alignment: .leading, spacing: 10) {
+            GeometryReader { geo in
+                HStack(spacing: 2) {
+                    ForEach(entries, id: \.code) { entry in
+                        Capsule()
+                            .fill(color(entry.code))
+                            .frame(width: max(8, (geo.size.width - CGFloat(entries.count - 1) * 2)
+                                * CGFloat(entry.count) / CGFloat(total)))
+                    }
+                }
+            }
+            .frame(height: 10)
+            HStack(spacing: 14) {
+                ForEach(entries, id: \.code) { entry in
+                    HStack(spacing: 5) {
+                        Circle().fill(color(entry.code)).frame(width: 7, height: 7)
+                        Text("\(name(entry.code)) \(entry.count)")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+            }
         }
     }
 
-    private func languageName(_ code: String) -> String {
+    private func color(_ code: String) -> Color { Self.hues[code] ?? Self.fallback }
+
+    private func name(_ code: String) -> String {
         Locale(identifier: "en").localizedString(forLanguageCode: code)?.capitalized ?? code
     }
 }
@@ -117,31 +214,5 @@ private struct StatTile: View {
         .frame(maxWidth: .infinity)
         .padding(.vertical, 14)
         .background(.quaternary.opacity(0.5), in: RoundedRectangle(cornerRadius: 10))
-    }
-}
-
-private struct BarRow: View {
-    let label: String
-    let count: Int
-    let fraction: Double
-
-    var body: some View {
-        HStack(spacing: 8) {
-            Text(label)
-                .font(.caption)
-                .frame(width: 80, alignment: .leading)
-            GeometryReader { geo in
-                if count > 0 {
-                    Capsule()
-                        .fill(.tint.opacity(0.75))
-                        .frame(width: max(6, geo.size.width * fraction))
-                }
-            }
-            .frame(height: 8)
-            Text("\(count)")
-                .font(.caption.monospacedDigit())
-                .foregroundStyle(.secondary)
-                .frame(width: 34, alignment: .trailing)
-        }
     }
 }
