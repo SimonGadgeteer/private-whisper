@@ -23,7 +23,17 @@ The PRD listed **distil-large-v3** as the latency fallback, but distil-whisper i
 
 ### Mini-eval results (10 multilingual samples, judged by local gpt-oss-120b)
 
-_(results table inserted after the run — see evals/results.json for full detail)_
+| model | fits 16 GB Mini | quality /10 | median s | lang fails |
+|---|---|---|---|---|
+| ministral-3-14b-reasoning | ⚠️ 9.1 GB | 10.0 | 1.84 | 0 |
+| gemma-4-12b | yes | 10.0 | 32.4 | 0 |
+| qwen3.6-27b (reference) | no | 10.0 | 164.7 | 0 |
+| **qwen3-8b** (`/no_think`) | **yes (4.6 GB)** | **9.9** | **0.67** | 0 |
+| ministral-3-3b | yes (3.0 GB) | 9.4 | 0.44 | 0 |
+| qwen3.5-4b | yes | 5.3 | 71.6 | 2 |
+| qwen3.5-9b | yes | 4.6 | 98.4 | 4 |
+
+**Default: `qwen/qwen3-8b`** — 9.9/10 at 0.67 s median, fits the Mini. `ministral-3-14b-reasoning` is the quality-max option (10/10 @ 1.84 s) for the 128 GB machine but exceeds the Mini budget; `ministral-3-3b` is fastest but restructures text and adds markdown. Qwen 3.5 models are disqualified: always-thinking (70–100 s) and the only candidates that translated samples into the wrong language. Full analysis: evals/results.md.
 
 ## 5. Re-trigger while processing: reject (PRD §7.7)
 
