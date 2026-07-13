@@ -16,6 +16,9 @@ final class PipelineController {
     private var transcriber: WhisperCppTranscriber
     private var loadedModelPath: URL
 
+    /// Live mic RMS while recording, delivered on the main thread.
+    var onAudioLevel: ((Float) -> Void)?
+
     init(configStore: ConfigStore, statusItem: StatusItemController, hud: HUDController) {
         self.configStore = configStore
         self.statusItem = statusItem
@@ -23,6 +26,9 @@ final class PipelineController {
         let path = configStore.config.whisperModelPath
         self.transcriber = WhisperCppTranscriber(modelPath: path)
         self.loadedModelPath = path
+        recorder.onLevel = { [weak self] level in
+            DispatchQueue.main.async { self?.onAudioLevel?(level) }
+        }
     }
 
     /// Loads the whisper model in the background so the first dictation is fast.

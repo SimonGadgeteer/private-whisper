@@ -14,6 +14,8 @@ final class AudioRecorder {
     /// Incremented per recording session; late tap callbacks from a previous
     /// session are dropped so they can't bleed samples into the next one.
     private var session = 0
+    /// Live per-chunk RMS for UI level meters. Called on the audio tap thread.
+    var onLevel: ((Float) -> Void)?
 
     /// Selects the capture device. nil = system default.
     func setInputDevice(uid: String?) {
@@ -86,10 +88,17 @@ final class AudioRecorder {
         guard error == nil, let channel = out.floatChannelData?[0] else { return }
         let count = Int(out.frameLength)
         lock.lock()
-        if session == self.session {
+        let isCurrent = session == self.session
+        if isCurrent {
             samples.append(contentsOf: UnsafeBufferPointer(start: channel, count: count))
         }
         lock.unlock()
+
+        if isCurrent, count > 0, let onLevel {
+            var sum: Float = 0
+            for i in 0..<count { sum += channel[i] * channel[i] }
+            onLevel((sum / Float(count)).squareRoot())
+        }
     }
 }
 

@@ -39,6 +39,7 @@ struct AppConfig: Codable, Equatable {
     var cleanupTimeoutSeconds: Double = 15
     var historyLoggingEnabled: Bool = false
     var launchAtLogin: Bool = false
+    var notchIndicatorEnabled: Bool = true
 
     static let supportDir: URL = FileManager.default
         .urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
@@ -87,6 +88,7 @@ struct AppConfig: Codable, Equatable {
         cleanupTimeoutSeconds = try c.decodeIfPresent(Double.self, forKey: .cleanupTimeoutSeconds) ?? defaults.cleanupTimeoutSeconds
         historyLoggingEnabled = try c.decodeIfPresent(Bool.self, forKey: .historyLoggingEnabled) ?? defaults.historyLoggingEnabled
         launchAtLogin = try c.decodeIfPresent(Bool.self, forKey: .launchAtLogin) ?? defaults.launchAtLogin
+        notchIndicatorEnabled = try c.decodeIfPresent(Bool.self, forKey: .notchIndicatorEnabled) ?? defaults.notchIndicatorEnabled
     }
 
     init() {}

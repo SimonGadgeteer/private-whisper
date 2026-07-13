@@ -17,6 +17,8 @@ final class StatusItemController {
 
     var onToggleCleanup: (() -> Void)?
     var onOpenSettings: (() -> Void)?
+    /// Fired on every state transition (drives the notch indicator).
+    var onStateChange: ((AppState) -> Void)?
 
     /// Most recent dictation result; menu fallback in case injection no-ops.
     var lastDictation: String? {
@@ -70,6 +72,7 @@ final class StatusItemController {
     func setState(_ newState: AppState) {
         revertTask?.cancel()
         state = newState
+        onStateChange?(newState)
 
         let (symbol, description, tint): (String, String, NSColor?) = {
             switch newState {

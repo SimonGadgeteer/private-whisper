@@ -9,6 +9,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var hud: HUDController!
     private var pipeline: PipelineController!
     private var hotkey: HotkeyMonitor!
+    private var notch: NotchIndicatorController!
     private var settingsWindow: NSWindow?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
@@ -18,6 +19,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         statusItem = StatusItemController()
         hud = HUDController()
         pipeline = PipelineController(configStore: configStore, statusItem: statusItem, hud: hud)
+        notch = NotchIndicatorController(configStore: configStore)
+        statusItem.onStateChange = { [weak self] state in self?.notch.update(state: state) }
+        pipeline.onAudioLevel = { [weak self] level in self?.notch.pushLevel(level) }
 
         statusItem.setCleanupChecked(configStore.config.cleanupEnabled)
         statusItem.onToggleCleanup = { [weak self] in
