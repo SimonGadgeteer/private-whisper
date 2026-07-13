@@ -135,6 +135,14 @@ final class PipelineController {
 
                 deliver(finalText, fellBack: fellBack)
 
+                StatsStore.shared.record(
+                    words: finalText.split(whereSeparator: \.isWhitespace).count,
+                    language: result.language,
+                    audioSeconds: audioSeconds,
+                    transcriptionSeconds: transcriptionSeconds,
+                    cleanupSeconds: cleanupSeconds,
+                    fellBack: fellBack)
+
                 if config.historyLoggingEnabled {
                     HistoryLogger.append(.init(
                         timestamp: ISO8601DateFormatter().string(from: Date()),

@@ -17,6 +17,7 @@ final class StatusItemController {
 
     var onToggleCleanup: (() -> Void)?
     var onOpenSettings: (() -> Void)?
+    var onOpenMainWindow: (() -> Void)?
     /// Fired on every state transition (drives the notch indicator).
     var onStateChange: ((AppState) -> Void)?
 
@@ -36,6 +37,12 @@ final class StatusItemController {
         menu.autoenablesItems = false
         stateMenuItem.isEnabled = false
         menu.addItem(stateMenuItem)
+        menu.addItem(.separator())
+
+        let openItem = NSMenuItem(
+            title: "Open Private Whisper…", action: #selector(openMainWindow), keyEquivalent: "o")
+        openItem.target = self
+        menu.addItem(openItem)
         menu.addItem(.separator())
 
         let cleanupItem = NSMenuItem(
@@ -118,6 +125,7 @@ final class StatusItemController {
 
     @objc private func toggleCleanup() { onToggleCleanup?() }
     @objc private func openSettings() { onOpenSettings?() }
+    @objc private func openMainWindow() { onOpenMainWindow?() }
 
     @objc private func copyLast() {
         guard let lastDictation else { return }

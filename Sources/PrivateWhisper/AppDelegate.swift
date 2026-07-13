@@ -10,7 +10,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var pipeline: PipelineController!
     private var hotkey: HotkeyMonitor!
     private var notch: NotchIndicatorController!
-    private var settingsWindow: NSWindow?
+    private var mainWindow: NSWindow?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         configStore = ConfigStore()
@@ -29,7 +29,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             configStore.config.cleanupEnabled.toggle()
             statusItem.setCleanupChecked(configStore.config.cleanupEnabled)
         }
-        statusItem.onOpenSettings = { [weak self] in self?.showSettings() }
+        statusItem.onOpenSettings = { [weak self] in self?.showMainWindow() }
+        statusItem.onOpenMainWindow = { [weak self] in self?.showMainWindow() }
 
         hotkey = HotkeyMonitor(choice: configStore.config.hotkey)
         hotkey.onPress = { [weak self] in self?.pipeline.hotkeyPressed() }
@@ -75,19 +76,20 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         pipeline?.shutdown()
     }
 
-    private func showSettings() {
-        if settingsWindow == nil {
+    private func showMainWindow() {
+        if mainWindow == nil {
             let window = NSWindow(
                 contentRect: .zero,
-                styleMask: [.titled, .closable],
+                styleMask: [.titled, .closable, .miniaturizable],
                 backing: .buffered, defer: false)
-            window.title = "Private Whisper Settings"
-            window.contentView = NSHostingView(rootView: SettingsView(configStore: configStore))
+            window.title = "Private Whisper"
+            window.contentView = NSHostingView(rootView: MainWindowView(
+                configStore: configStore, statsStore: StatsStore.shared))
             window.isReleasedWhenClosed = false
             window.center()
-            settingsWindow = window
+            mainWindow = window
         }
-        settingsWindow?.makeKeyAndOrderFront(nil)
+        mainWindow?.makeKeyAndOrderFront(nil)
         NSApp.activate(ignoringOtherApps: true)
     }
 }

@@ -27,7 +27,12 @@ On first launch, grant:
 - Hold **Right Option**, dictate, release. The menu-bar icon shows state: mic (idle) → red mic (recording) → hourglass (processing) → green check (inserted).
 - Yellow warning icon = cleanup fell back to the raw transcript (LM Studio down/slow) — your dictation is never lost.
 - No text field focused / password field → a HUD shows the text with a Copy button instead.
-- Menu bar → **Settings…** for hotkey, microphone, whisper model, LM Studio URL/model, cleanup toggle/timeout, history logging (default off), launch at login.
+- Menu bar → **Open Private Whisper…** for the app window: usage statistics (dictations, words, latency, per-language and per-day breakdown — counters only, no transcript content) and Settings (hotkey, microphone, whisper model, LM Studio URL/model with connection test, cleanup toggle/timeout, notch indicator, history logging, launch at login).
+- A Siri-style floating capsule below the notch shows live state: waveform while recording, shimmer while transcribing, checkmark when inserted.
+
+### Remote cleanup (Mac Mini)
+
+The cleanup LLM doesn't have to run on this machine: in LM Studio on the Mac Mini enable the server with "Serve on Local Network", then set the Server URL in Settings to e.g. `http://mac-mini.local:1234/v1` and pick a model (Test Connection lists what's available). Note this sends transcripts over your LAN to your own machine — still no cloud involved.
 
 Config lives at `~/Library/Application Support/PrivateWhisper/config.json`.
 

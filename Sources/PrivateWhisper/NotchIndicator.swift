@@ -1,10 +1,10 @@
 import AppKit
 import SwiftUI
 
-/// Activity pill that hangs flush under the MacBook notch (or under the menu
-/// bar on external displays): live waveform while recording, animated dots
-/// while processing, brief checkmark on success. Click-through, all Spaces,
-/// visible over fullscreen apps.
+/// Floating activity capsule below the notch — Siri-style: dark capsule with
+/// a soft animated gradient glow, live waveform while recording, shimmer while
+/// processing, brief checkmark on success. Click-through, all Spaces, visible
+/// over fullscreen apps.
 @MainActor
 final class NotchIndicatorController {
     enum Mode: Equatable {
@@ -58,16 +58,11 @@ final class NotchIndicatorController {
 
     // MARK: - Panel
 
-    private static let pillHeight: CGFloat = 34
-
-    /// Match the physical notch width (plus a hair so the rounded corners
-    /// read as part of it); sensible fixed width on non-notch displays.
-    private static func pillWidth(for screen: NSScreen) -> CGFloat {
-        if let left = screen.auxiliaryTopLeftArea, let right = screen.auxiliaryTopRightArea {
-            return screen.frame.width - left.width - right.width + 8
-        }
-        return 160
-    }
+    private static let pillSize = NSSize(width: 172, height: 38)
+    /// Extra canvas around the capsule so the glow shadow isn't clipped.
+    private static let glowMargin: CGFloat = 24
+    /// Gap between the bottom of the notch / menu bar and the capsule.
+    private static let topGap: CGFloat = 12
 
     private func show() {
         if panel == nil { panel = makePanel() }
@@ -88,9 +83,11 @@ final class NotchIndicatorController {
     }
 
     private func makePanel() -> NSPanel {
-        let size = NSSize(width: 160, height: Self.pillHeight)
+        let canvas = NSSize(
+            width: Self.pillSize.width + Self.glowMargin * 2,
+            height: Self.pillSize.height + Self.glowMargin * 2)
         let hosting = NSHostingView(rootView: NotchPillView(model: model))
-        hosting.frame = NSRect(origin: .zero, size: size)
+        hosting.frame = NSRect(origin: .zero, size: canvas)
 
         let panel = NSPanel(
             contentRect: hosting.frame,
@@ -98,7 +95,7 @@ final class NotchIndicatorController {
             backing: .buffered, defer: false)
         panel.backgroundColor = .clear
         panel.isOpaque = false
-        panel.hasShadow = true
+        panel.hasShadow = false // the SwiftUI glow is the shadow
         panel.level = .statusBar
         panel.ignoresMouseEvents = true
         panel.hidesOnDeactivate = false
@@ -107,8 +104,6 @@ final class NotchIndicatorController {
         return panel
     }
 
-    /// Flush under the notch on the built-in display; flush under the menu bar
-    /// on displays without a notch.
     private func reposition() {
         guard let panel else { return }
         let screen = NSScreen.screens.first { $0.safeAreaInsets.top > 0 }
@@ -119,38 +114,27 @@ final class NotchIndicatorController {
         let topInset = screen.safeAreaInsets.top > 0
             ? screen.safeAreaInsets.top
             : (screen.frame.maxY - screen.visibleFrame.maxY)
-        let size = NSSize(width: Self.pillWidth(for: screen), height: Self.pillHeight)
-        model.configure(width: size.width)
-        panel.setFrame(NSRect(
-            x: screen.frame.midX - size.width / 2,
-            y: screen.frame.maxY - topInset - size.height,
-            width: size.width, height: size.height), display: true)
-        panel.contentView?.frame = NSRect(origin: .zero, size: size)
+        let canvas = panel.frame.size
+        panel.setFrameOrigin(NSPoint(
+            x: screen.frame.midX - canvas.width / 2,
+            // glowMargin sits above the capsule, so subtract it back out.
+            y: screen.frame.maxY - topInset - Self.topGap - canvas.height + Self.glowMargin))
     }
 }
 
 @MainActor
 final class NotchIndicatorModel: ObservableObject {
     @Published var mode: NotchIndicatorController.Mode = .recording
-    @Published var levels: [Float] = []
-    @Published var pillWidth: CGFloat = 160
+    @Published var levels: [Float] = NotchIndicatorModel.emptyLevels
 
-    /// Adapts bar count to the pill width (6 pt per bar, ~56 pt for the red
-    /// dot, spacing and padding).
-    func configure(width: CGFloat) {
-        pillWidth = width
-        let bars = max(8, Int((width - 56) / 6))
-        if levels.count != bars {
-            levels = Array(repeating: 0, count: bars)
-        }
-    }
+    static let barCount = 16
+    private static var emptyLevels: [Float] { Array(repeating: 0, count: barCount) }
 
     func resetLevels() {
-        levels = Array(repeating: 0, count: max(levels.count, 8))
+        levels = Self.emptyLevels
     }
 
     func push(level: Float) {
-        guard !levels.isEmpty else { return }
         levels.removeFirst()
         levels.append(level)
     }
@@ -159,18 +143,50 @@ final class NotchIndicatorModel: ObservableObject {
 private struct NotchPillView: View {
     @ObservedObject var model: NotchIndicatorModel
 
+    private static let siriGradient = [
+        Color(red: 0.31, green: 0.65, blue: 1.0),   // blue
+        Color(red: 0.62, green: 0.42, blue: 1.0),   // purple
+        Color(red: 1.0, green: 0.45, blue: 0.66),   // pink
+        Color(red: 0.31, green: 0.65, blue: 1.0),
+    ]
+
     var body: some View {
-        HStack(spacing: 10) {
+        content
+            .frame(width: 172, height: 38)
+            .background(Capsule().fill(Color.black.opacity(0.88)))
+            .overlay(
+                Capsule().strokeBorder(
+                    AngularGradient(colors: Self.siriGradient, center: .center),
+                    lineWidth: 1.5)
+            )
+            .shadow(color: glowColor.opacity(0.55), radius: 12, y: 2)
+            .padding(24) // glow canvas margin
+    }
+
+    private var glowColor: Color {
+        switch model.mode {
+        case .recording: return Color(red: 0.62, green: 0.42, blue: 1.0)
+        case .processing: return Color(red: 0.31, green: 0.65, blue: 1.0)
+        case .success: return .green
+        case .warning: return .yellow
+        }
+    }
+
+    @ViewBuilder
+    private var content: some View {
+        HStack(spacing: 9) {
             switch model.mode {
             case .recording:
                 Circle()
                     .fill(.red)
-                    .frame(width: 7, height: 7)
+                    .frame(width: 6, height: 6)
                 WaveformBars(levels: model.levels)
             case .processing:
                 Image(systemName: "ellipsis")
                     .symbolEffect(.variableColor.iterative, options: .repeating)
-                    .foregroundStyle(.white)
+                    .foregroundStyle(
+                        LinearGradient(colors: [Self.siriGradient[0], Self.siriGradient[1]],
+                                       startPoint: .leading, endPoint: .trailing))
                 Text("Transcribing…")
                     .font(.system(size: 11, weight: .medium))
                     .foregroundStyle(.white.opacity(0.85))
@@ -188,24 +204,21 @@ private struct NotchPillView: View {
                     .foregroundStyle(.white.opacity(0.85))
             }
         }
-        .frame(width: model.pillWidth, height: 34)
-        .background(
-            UnevenRoundedRectangle(
-                topLeadingRadius: 0, bottomLeadingRadius: 14,
-                bottomTrailingRadius: 14, topTrailingRadius: 0)
-                .fill(.black)
-        )
     }
 }
 
 private struct WaveformBars: View {
     let levels: [Float]
 
+    private static let barGradient = LinearGradient(
+        colors: [Color(red: 0.31, green: 0.65, blue: 1.0), Color(red: 0.62, green: 0.42, blue: 1.0)],
+        startPoint: .bottom, endPoint: .top)
+
     var body: some View {
-        HStack(alignment: .center, spacing: 3) {
+        HStack(alignment: .center, spacing: 3.5) {
             ForEach(levels.indices, id: \.self) { i in
                 Capsule()
-                    .fill(.white.opacity(0.9))
+                    .fill(Self.barGradient)
                     .frame(width: 3, height: barHeight(levels[i]))
             }
         }
@@ -213,8 +226,8 @@ private struct WaveformBars: View {
     }
 
     private func barHeight(_ level: Float) -> CGFloat {
-        // Speech chunk RMS is roughly 0.01–0.2; map to 3–20 pt.
+        // Speech chunk RMS is roughly 0.01–0.2; map to 3–22 pt.
         let normalized = min(1, CGFloat(level) * 10)
-        return 3 + normalized * 17
+        return 3 + normalized * 19
     }
 }

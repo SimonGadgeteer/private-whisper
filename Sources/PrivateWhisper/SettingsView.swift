@@ -7,6 +7,7 @@ struct SettingsView: View {
     @State private var availableCleanupModels: [String] = []
     @State private var inputDevices: [AudioInputDevice] = []
     @State private var accessibilityGranted = Permissions.checkAccessibility(prompt: false)
+    @State private var connectionTestResult: String?
 
     private let whisperModels = ["large-v3-turbo", "large-v3"]
 
@@ -48,6 +49,27 @@ struct SettingsView: View {
             Section("Cleanup (LM Studio)") {
                 Toggle("Cleanup enabled", isOn: $configStore.config.cleanupEnabled)
                 TextField("Server URL", text: $configStore.config.lmStudioURL)
+                Text("Local: http://localhost:1234/v1 — or a machine on your network, e.g. http://mac-mini.local:1234/v1 (enable \"Serve on Local Network\" in LM Studio's server settings there).")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                HStack {
+                    Button("Test Connection") {
+                        connectionTestResult = "Testing…"
+                        Task {
+                            let models = await CleanupService.availableModels(
+                                baseURL: configStore.config.lmStudioURL)
+                            connectionTestResult = models.isEmpty
+                                ? "✗ Unreachable (is the LM Studio server running?)"
+                                : "✓ Connected — \(models.count) models available"
+                            availableCleanupModels = models
+                        }
+                    }
+                    if let connectionTestResult {
+                        Text(connectionTestResult)
+                            .font(.caption)
+                            .foregroundStyle(connectionTestResult.hasPrefix("✓") ? .green : .secondary)
+                    }
+                }
                 HStack {
                     Picker("Model", selection: $configStore.config.cleanupModel) {
                         if !availableCleanupModels.contains(configStore.config.cleanupModel) {

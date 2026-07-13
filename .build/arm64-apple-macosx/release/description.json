@@ -73,6 +73,10 @@
         },
         {
           "kind" : "file",
+          "name" : "/Users/simon/Documents/claude/whisper_local/Sources/PrivateWhisper/MainWindowView.swift"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/simon/Documents/claude/whisper_local/Sources/PrivateWhisper/NotchIndicator.swift"
         },
         {
@@ -86,6 +90,10 @@
         {
           "kind" : "file",
           "name" : "/Users/simon/Documents/claude/whisper_local/Sources/PrivateWhisper/SettingsView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/simon/Documents/claude/whisper_local/Sources/PrivateWhisper/Stats.swift"
         },
         {
           "kind" : "file",
@@ -133,10 +141,12 @@
         "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/PrivateWhisper.build/HistoryLogger.swift.o",
         "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/PrivateWhisper.build/HotkeyMonitor.swift.o",
         "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/PrivateWhisper.build/Logging.swift.o",
+        "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/PrivateWhisper.build/MainWindowView.swift.o",
         "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/PrivateWhisper.build/NotchIndicator.swift.o",
         "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/PrivateWhisper.build/Permissions.swift.o",
         "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/PrivateWhisper.build/PipelineController.swift.o",
         "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/PrivateWhisper.build/SettingsView.swift.o",
+        "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/PrivateWhisper.build/Stats.swift.o",
         "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/PrivateWhisper.build/StatusItemController.swift.o",
         "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/PrivateWhisper.build/TestMode.swift.o",
         "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/PrivateWhisper.build/TextInjector.swift.o",
@@ -243,6 +253,10 @@
         },
         {
           "kind" : "file",
+          "name" : "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/PrivateWhisper.build/MainWindowView.swift.o"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/PrivateWhisper.build/NotchIndicator.swift.o"
         },
         {
@@ -256,6 +270,10 @@
         {
           "kind" : "file",
           "name" : "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/PrivateWhisper.build/SettingsView.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/PrivateWhisper.build/Stats.swift.o"
         },
         {
           "kind" : "file",
@@ -293,10 +311,12 @@
         "/Users/simon/Documents/claude/whisper_local/Sources/PrivateWhisper/HistoryLogger.swift",
         "/Users/simon/Documents/claude/whisper_local/Sources/PrivateWhisper/HotkeyMonitor.swift",
         "/Users/simon/Documents/claude/whisper_local/Sources/PrivateWhisper/Logging.swift",
+        "/Users/simon/Documents/claude/whisper_local/Sources/PrivateWhisper/MainWindowView.swift",
         "/Users/simon/Documents/claude/whisper_local/Sources/PrivateWhisper/NotchIndicator.swift",
         "/Users/simon/Documents/claude/whisper_local/Sources/PrivateWhisper/Permissions.swift",
         "/Users/simon/Documents/claude/whisper_local/Sources/PrivateWhisper/PipelineController.swift",
         "/Users/simon/Documents/claude/whisper_local/Sources/PrivateWhisper/SettingsView.swift",
+        "/Users/simon/Documents/claude/whisper_local/Sources/PrivateWhisper/Stats.swift",
         "/Users/simon/Documents/claude/whisper_local/Sources/PrivateWhisper/StatusItemController.swift",
         "/Users/simon/Documents/claude/whisper_local/Sources/PrivateWhisper/TestMode.swift",
         "/Users/simon/Documents/claude/whisper_local/Sources/PrivateWhisper/TextInjector.swift",
@@ -327,10 +347,12 @@
       "/Users/simon/Documents/claude/whisper_local/Sources/PrivateWhisper/HistoryLogger.swift",
       "/Users/simon/Documents/claude/whisper_local/Sources/PrivateWhisper/HotkeyMonitor.swift",
       "/Users/simon/Documents/claude/whisper_local/Sources/PrivateWhisper/Logging.swift",
+      "/Users/simon/Documents/claude/whisper_local/Sources/PrivateWhisper/MainWindowView.swift",
       "/Users/simon/Documents/claude/whisper_local/Sources/PrivateWhisper/NotchIndicator.swift",
       "/Users/simon/Documents/claude/whisper_local/Sources/PrivateWhisper/Permissions.swift",
       "/Users/simon/Documents/claude/whisper_local/Sources/PrivateWhisper/PipelineController.swift",
       "/Users/simon/Documents/claude/whisper_local/Sources/PrivateWhisper/SettingsView.swift",
+      "/Users/simon/Documents/claude/whisper_local/Sources/PrivateWhisper/Stats.swift",
       "/Users/simon/Documents/claude/whisper_local/Sources/PrivateWhisper/StatusItemController.swift",
       "/Users/simon/Documents/claude/whisper_local/Sources/PrivateWhisper/TestMode.swift",
       "/Users/simon/Documents/claude/whisper_local/Sources/PrivateWhisper/TextInjector.swift",
@@ -462,6 +484,10 @@
         },
         {
           "kind" : "file",
+          "name" : "/Users/simon/Documents/claude/whisper_local/Sources/PrivateWhisper/MainWindowView.swift"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/simon/Documents/claude/whisper_local/Sources/PrivateWhisper/NotchIndicator.swift"
         },
         {
@@ -475,6 +501,10 @@
         {
           "kind" : "file",
           "name" : "/Users/simon/Documents/claude/whisper_local/Sources/PrivateWhisper/SettingsView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/simon/Documents/claude/whisper_local/Sources/PrivateWhisper/Stats.swift"
         },
         {
           "kind" : "file",
@@ -544,6 +574,10 @@
         },
         {
           "kind" : "file",
+          "name" : "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/PrivateWhisper.build/MainWindowView.swift.o"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/PrivateWhisper.build/NotchIndicator.swift.o"
         },
         {
@@ -557,6 +591,10 @@
         {
           "kind" : "file",
           "name" : "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/PrivateWhisper.build/SettingsView.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/PrivateWhisper.build/Stats.swift.o"
         },
         {
           "kind" : "file",
