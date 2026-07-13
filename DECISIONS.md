@@ -44,8 +44,8 @@ Whisper hallucinates fragments ("you", "Thank you.") on near-silence, and its `n
 
 ## 9. App identity / signing
 
-Signed with the local Apple Development identity (stable designated requirement) so Accessibility/Microphone grants survive rebuilds — ad-hoc signing would reset TCC on every build. Bundle ID: `ch.simonschwarz.LocalDictation`.
+Signed with the local Apple Development identity (stable designated requirement) so Accessibility/Microphone grants survive rebuilds — ad-hoc signing would reset TCC on every build. Bundle ID: `ch.simonschwarz.PrivateWhisper`.
 
 ## 10. Config
 
-JSON at `~/Library/Application Support/LocalDictation/config.json`, tolerant decoding (missing keys → defaults) so the file survives app updates that add fields.
+JSON at `~/Library/Application Support/PrivateWhisper/config.json`, tolerant decoding (missing keys → defaults) so the file survives app updates that add fields.

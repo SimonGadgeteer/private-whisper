@@ -2,13 +2,13 @@
 import PackageDescription
 
 let package = Package(
-    name: "LocalDictation",
+    name: "PrivateWhisper",
     platforms: [.macOS(.v14)],
     targets: [
         .executableTarget(
-            name: "LocalDictation",
+            name: "PrivateWhisper",
             dependencies: ["whisper"],
-            path: "Sources/LocalDictation",
+            path: "Sources/PrivateWhisper",
             linkerSettings: [
                 .linkedFramework("AppKit"),
                 .linkedFramework("AVFoundation"),

@@ -52,6 +52,12 @@
     "swift-dependencies": "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/HotkeyMonitor.swiftdeps",
     "diagnostics": "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/HotkeyMonitor.dia"
   },
+  "/Users/simon/Documents/claude/whisper_local/Sources/LocalDictation/Logging.swift": {
+    "object": "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/Logging.swift.o",
+    "swiftmodule": "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/Logging~partial.swiftmodule",
+    "swift-dependencies": "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/Logging.swiftdeps",
+    "diagnostics": "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/Logging.dia"
+  },
   "/Users/simon/Documents/claude/whisper_local/Sources/LocalDictation/Permissions.swift": {
     "object": "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/Permissions.swift.o",
     "swiftmodule": "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/Permissions~partial.swiftmodule",

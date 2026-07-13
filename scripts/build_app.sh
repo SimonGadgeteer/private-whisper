@@ -1,12 +1,12 @@
 #!/bin/bash
-# Builds LocalDictation.app: swift build → assemble bundle → embed
+# Builds PrivateWhisper.app: swift build → assemble bundle → embed
 # whisper.framework → codesign with the Apple Development identity so the
 # TCC (Accessibility/Microphone) grants survive rebuilds.
 set -euo pipefail
 
 cd "$(dirname "$0")/.."
 PROJECT_DIR="$PWD"
-APP_NAME="LocalDictation"
+APP_NAME="PrivateWhisper"
 BUILD_DIR="$PROJECT_DIR/.build/arm64-apple-macosx/release"
 APP_DIR="$PROJECT_DIR/build/$APP_NAME.app"
 SIGN_IDENTITY="${SIGN_IDENTITY:-Apple Development: REDACTED-IDENTITY}"
@@ -29,7 +29,7 @@ echo "==> Codesigning"
 codesign --force --sign "$SIGN_IDENTITY" \
     "$APP_DIR/Contents/Frameworks/whisper.framework"
 codesign --force --sign "$SIGN_IDENTITY" \
-    --identifier ch.simonschwarz.LocalDictation \
+    --identifier ch.simonschwarz.PrivateWhisper \
     "$APP_DIR"
 
 codesign --verify --deep --strict "$APP_DIR"

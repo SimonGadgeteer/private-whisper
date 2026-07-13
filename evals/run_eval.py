@@ -23,7 +23,7 @@ CANDIDATES = [
     ("qwen/qwen3-8b",                                True,  "hybrid; /no_think honored"),
     ("qwen/qwen3.5-4b",                              True,  "always-thinking"),
     ("qwen/qwen3.5-9b",                              True,  "always-thinking"),
-    ("mlx-community/ministral-3-3b-instruct-2512",   True,  "instruct, non-reasoning"),
+    ("mistralai/ministral-3-3b",                     True,  "instruct, non-reasoning"),
     ("mistralai/ministral-3-14b-reasoning",          True,  "reasoning; ~8.5GB, borderline"),
     ("google/gemma-4-12b",                           True,  "thinks by default"),
     ("qwen3.6-27b-mlx",                              False, "reference only — exceeds Mini RAM"),

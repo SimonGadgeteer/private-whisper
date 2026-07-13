@@ -6,6 +6,7 @@
 /Users/simon/Documents/claude/whisper_local/Sources/LocalDictation/HUDController.swift
 /Users/simon/Documents/claude/whisper_local/Sources/LocalDictation/HistoryLogger.swift
 /Users/simon/Documents/claude/whisper_local/Sources/LocalDictation/HotkeyMonitor.swift
+/Users/simon/Documents/claude/whisper_local/Sources/LocalDictation/Logging.swift
 /Users/simon/Documents/claude/whisper_local/Sources/LocalDictation/Permissions.swift
 /Users/simon/Documents/claude/whisper_local/Sources/LocalDictation/PipelineController.swift
 /Users/simon/Documents/claude/whisper_local/Sources/LocalDictation/SettingsView.swift
