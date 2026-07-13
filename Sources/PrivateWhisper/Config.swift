@@ -40,6 +40,21 @@ struct AppConfig: Codable, Equatable {
     var historyLoggingEnabled: Bool = false
     var launchAtLogin: Bool = false
     var notchIndicatorEnabled: Bool = true
+    /// Personal dictionary: names/jargon biased into whisper and enforced in cleanup.
+    var dictionary: [String] = []
+    /// Frontmost-app bundle id -> tone hint appended to the cleanup prompt.
+    var appTones: [String: String] = AppConfig.defaultAppTones
+    /// Hold-to-speak hotkey for command mode (voice-edit the selection). nil = disabled.
+    var commandHotkey: HotkeyChoice? = .rightCommand
+
+    static let defaultAppTones: [String: String] = [
+        "com.apple.mail": "formal email register",
+        "com.microsoft.Outlook": "formal email register",
+        "com.tinyspeck.slackmacgap": "casual chat register",
+        "com.microsoft.teams2": "professional chat register",
+        "com.apple.MobileSMS": "casual chat register",
+        "com.microsoft.VSCode": "technical, keep identifiers and code terms verbatim",
+    ]
 
     static let supportDir: URL = FileManager.default
         .urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
@@ -89,6 +104,9 @@ struct AppConfig: Codable, Equatable {
         historyLoggingEnabled = try c.decodeIfPresent(Bool.self, forKey: .historyLoggingEnabled) ?? defaults.historyLoggingEnabled
         launchAtLogin = try c.decodeIfPresent(Bool.self, forKey: .launchAtLogin) ?? defaults.launchAtLogin
         notchIndicatorEnabled = try c.decodeIfPresent(Bool.self, forKey: .notchIndicatorEnabled) ?? defaults.notchIndicatorEnabled
+        dictionary = try c.decodeIfPresent([String].self, forKey: .dictionary) ?? defaults.dictionary
+        appTones = try c.decodeIfPresent([String: String].self, forKey: .appTones) ?? defaults.appTones
+        commandHotkey = try c.decodeIfPresent(HotkeyChoice.self, forKey: .commandHotkey) ?? defaults.commandHotkey
     }
 
     init() {}

@@ -20,7 +20,10 @@ and must NOT be penalized). 0 if any part was translated to another language.
 - fillers_removed (0-2): 2 = all fillers/false starts/repetitions gone, 1 = some remain, 0 = mostly untouched.
 - meaning_preserved (0-3): 3 = identical meaning incl. all names, numbers, dates, amounts; \
 2 = trivial nuance lost; 1 = noticeable loss/change; 0 = wrong meaning or hallucinated content.
-- format_clean (0-1): 1 = plain cleaned text only; 0 = added quotes, commentary, labels or markdown.
+- format_clean (0-1): 1 = plain cleaned text only (a plain list with "- " items when the speaker \
+enumerated IS correct); 0 = added quotes, commentary, labels or heavy markdown (bold, headers).
+- Backtracking: when RAW contains a self-correction ("no wait", "nei warte", "ich meine", "je veux dire"), \
+CLEANED keeping the superseded value is a meaning_preserved failure (score 0-1 there).
 
 Reply with ONLY a JSON object: {"same_language": n, "fillers_removed": n, "meaning_preserved": n, "format_clean": n}"""
 

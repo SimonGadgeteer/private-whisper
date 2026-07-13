@@ -9,6 +9,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var hud: HUDController!
     private var pipeline: PipelineController!
     private var hotkey: HotkeyMonitor!
+    private var commandHotkey: HotkeyMonitor?
     private var notch: NotchIndicatorController!
     private var mainWindow: NSWindow?
 
@@ -35,6 +36,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         hotkey = HotkeyMonitor(choice: configStore.config.hotkey)
         hotkey.onPress = { [weak self] in self?.pipeline.hotkeyPressed() }
         hotkey.onRelease = { [weak self] in self?.pipeline.hotkeyReleased() }
+        installCommandMonitor()
 
         Task { await self.requestPermissionsAndStart() }
     }
@@ -66,10 +68,27 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var hotkeyObservation: AnyCancellable?
     private func observeHotkeyChanges() {
         hotkeyObservation = configStore.$config.sink { [weak self] config in
-            guard let self, hotkey.choice != config.hotkey else { return }
-            hotkey.choice = config.hotkey
-            hotkey.start() // reinstall with new key
+            guard let self else { return }
+            if hotkey.choice != config.hotkey {
+                hotkey.choice = config.hotkey
+                hotkey.start() // reinstall with new key
+            }
+            if commandHotkey?.choice != config.commandHotkey {
+                installCommandMonitor()
+            }
         }
+    }
+
+    private func installCommandMonitor() {
+        commandHotkey?.stop()
+        commandHotkey = nil
+        guard let choice = configStore.config.commandHotkey,
+              choice != configStore.config.hotkey else { return }
+        let monitor = HotkeyMonitor(choice: choice)
+        monitor.onPress = { [weak self] in self?.pipeline.commandPressed() }
+        monitor.onRelease = { [weak self] in self?.pipeline.commandReleased() }
+        monitor.start()
+        commandHotkey = monitor
     }
 
     func applicationWillTerminate(_ notification: Notification) {

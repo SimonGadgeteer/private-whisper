@@ -20,7 +20,8 @@ struct TranscriptionResult {
 }
 
 protocol Transcriber {
-    func transcribe(samples: [Float]) async throws -> TranscriptionResult
+    /// `vocabulary` biases recognition toward personal-dictionary terms.
+    func transcribe(samples: [Float], vocabulary: [String]) async throws -> TranscriptionResult
 }
 
 enum TranscriberError: Error, LocalizedError {
@@ -83,14 +84,19 @@ actor WhisperCppTranscriber: Transcriber {
         }
     }
 
-    func transcribe(samples: [Float]) async throws -> TranscriptionResult {
+    func transcribe(samples: [Float], vocabulary: [String] = []) async throws -> TranscriptionResult {
         try await preload()
         guard let ctx else { throw TranscriberError.initFailed }
+
+        // whisper conditions on the initial prompt as if it preceded the audio,
+        // biasing recognition toward these spellings (cap to stay within n_ctx/2).
+        let prompt = vocabulary.isEmpty ? nil : vocabulary.prefix(80).joined(separator: ", ")
 
         let outcome: (status: Int32, text: String, language: String) =
             await withCheckedContinuation { continuation in
                 inferenceQueue.async {
-                    continuation.resume(returning: Self.runInference(ctx: ctx, samples: samples))
+                    continuation.resume(returning: Self.runInference(
+                        ctx: ctx, samples: samples, prompt: prompt))
                 }
             }
         guard outcome.status == 0 else { throw TranscriberError.inferenceFailed }
@@ -100,7 +106,7 @@ actor WhisperCppTranscriber: Transcriber {
     }
 
     private static func runInference(
-        ctx: OpaquePointer, samples: [Float]
+        ctx: OpaquePointer, samples: [Float], prompt: String?
     ) -> (status: Int32, text: String, language: String) {
         var params = whisper_full_default_params(WHISPER_SAMPLING_GREEDY)
         params.print_progress = false
@@ -112,12 +118,23 @@ actor WhisperCppTranscriber: Transcriber {
         params.suppress_blank = true
         params.n_threads = Int32(max(4, ProcessInfo.processInfo.activeProcessorCount - 2))
 
-        let status = "auto".withCString { lang -> Int32 in
-            params.language = lang
-            params.detect_language = false // transcribe with auto-detected language
-            return samples.withUnsafeBufferPointer { buf in
-                whisper_full(ctx, params, buf.baseAddress, Int32(buf.count))
+        let run: () -> Int32 = {
+            "auto".withCString { lang -> Int32 in
+                params.language = lang
+                params.detect_language = false // transcribe with auto-detected language
+                return samples.withUnsafeBufferPointer { buf in
+                    whisper_full(ctx, params, buf.baseAddress, Int32(buf.count))
+                }
             }
+        }
+        let status: Int32
+        if let prompt {
+            status = prompt.withCString { p -> Int32 in
+                params.initial_prompt = p
+                return run()
+            }
+        } else {
+            status = run()
         }
         guard status == 0 else { return (status, "", "unknown") }
 

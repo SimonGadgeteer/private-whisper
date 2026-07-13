@@ -1,8 +1,9 @@
 import Foundation
 
-/// Sends the raw transcript to LM Studio's OpenAI-compatible endpoint for the
-/// cleanup pass. Any failure (unreachable, timeout, bad response) throws — the
-/// pipeline falls back to the raw transcript so dictation is never lost.
+/// Talks to LM Studio's OpenAI-compatible endpoint for the cleanup pass and
+/// command-mode rewrites. Any failure (unreachable, timeout, bad response)
+/// throws — the pipeline falls back to the raw transcript so dictation is
+/// never lost.
 struct CleanupService {
     var baseURL: String
     var model: String
@@ -13,6 +14,8 @@ struct CleanupService {
         - Output ONLY the cleaned text. No preamble, no quotes, no commentary.
         - Keep the same language as the input (German stays German, French stays French, English stays English).
         - Remove filler words (um, äh, also, alors, you know), false starts, and repetitions.
+        - If the speaker corrects themselves ("next Tuesday — no wait, Wednesday", "also nein, ich meine…", "enfin, je veux dire…"), keep ONLY the corrected version.
+        - If the speaker enumerates items ("first… second…", "erstens… zweitens…", "premièrement…"), format them as a list, one item per line, each starting with "- ".
         - Fix punctuation, capitalization, and obvious transcription errors.
         - Preserve meaning, tone, names, numbers, and technical terms exactly.
         - Do not summarize, do not expand, do not translate.
@@ -32,31 +35,60 @@ struct CleanupService {
         }
     }
 
-    func cleanup(transcript: String, language: String?) async throws -> String {
-        guard let url = URL(string: baseURL.trimmingCharacters(in: CharacterSet(charactersIn: "/"))
-            .appending("/chat/completions")) else { throw CleanupError.badURL }
-
+    func cleanup(
+        transcript: String, language: String?,
+        glossary: [String] = [], toneHint: String? = nil
+    ) async throws -> String {
         var systemPrompt = Self.systemPrompt
         if let language, language != "unknown" {
             systemPrompt += "\n- The input language is \"\(language)\". The output must be in that same language."
         }
-        // Qwen3 hybrid models honor /no_think; without it they burn seconds of
-        // latency "thinking" about a filler-word removal. Harmless elsewhere.
-        if model.localizedCaseInsensitiveContains("qwen") {
-            systemPrompt += "\n/no_think"
+        if !glossary.isEmpty {
+            systemPrompt += "\n- Personal dictionary — when the transcript contains a similar-sounding or misspelled variant of one of these, use this exact spelling: "
+                + glossary.joined(separator: ", ")
+        }
+        if let toneHint, !toneHint.isEmpty {
+            systemPrompt += "\n- The text will be inserted into an app where the expected style is: \(toneHint). Adjust register lightly; never change meaning."
         }
 
         // PRD: max_tokens sized to input length × 1.5 (≈3 chars/token heuristic),
-        // plus fixed headroom for reasoning models that "think" before answering
-        // (e.g. Qwen 3.5) — otherwise they hit the cap mid-thought and return
-        // empty content. Non-thinking models just stop early, so this is free.
+        // plus fixed headroom for reasoning models that "think" before answering —
+        // otherwise they hit the cap mid-thought and return empty content.
+        // Non-thinking models just stop early, so the headroom is free.
         let maxTokens = max(256, Int(Double(transcript.count) / 3.0 * 1.5) + 64) + 2048
+
+        return try await send(systemPrompt: systemPrompt, userContent: transcript, maxTokens: maxTokens)
+    }
+
+    /// Command mode: apply a spoken instruction to selected text.
+    func rewrite(selection: String, instruction: String) async throws -> String {
+        let systemPrompt = """
+            You edit text according to the user's instruction. Rules:
+            - Output ONLY the edited text. No preamble, no quotes, no commentary.
+            - Keep the text's original language unless the instruction explicitly asks to translate.
+            - Apply the instruction faithfully; change nothing else.
+            """
+        let user = "Instruction: \(instruction)\n\nText:\n\(selection)"
+        let maxTokens = max(512, Int(Double(selection.count) / 3.0 * 2)) + 2048
+        return try await send(systemPrompt: systemPrompt, userContent: user, maxTokens: maxTokens)
+    }
+
+    private func send(systemPrompt: String, userContent: String, maxTokens: Int) async throws -> String {
+        guard let url = URL(string: baseURL.trimmingCharacters(in: CharacterSet(charactersIn: "/"))
+            .appending("/chat/completions")) else { throw CleanupError.badURL }
+
+        var systemPrompt = systemPrompt
+        // Qwen3 hybrids honor /no_think in the prompt; belt-and-braces next to
+        // reasoning_effort below. Harmless elsewhere.
+        if model.localizedCaseInsensitiveContains("qwen") {
+            systemPrompt += "\n/no_think"
+        }
 
         let body: [String: Any] = [
             "model": model,
             "messages": [
                 ["role": "system", "content": systemPrompt],
-                ["role": "user", "content": transcript],
+                ["role": "user", "content": userContent],
             ],
             "temperature": 0.2,
             "max_tokens": maxTokens,

@@ -8,6 +8,8 @@ struct SettingsView: View {
     @State private var inputDevices: [AudioInputDevice] = []
     @State private var accessibilityGranted = Permissions.checkAccessibility(prompt: false)
     @State private var connectionTestResult: String?
+    @State private var newToneBundleID = ""
+    @State private var newToneHint = ""
 
     private let whisperModels = ["large-v3-turbo", "large-v3"]
 
@@ -17,6 +19,15 @@ struct SettingsView: View {
                 Picker("Push-to-talk key", selection: $configStore.config.hotkey) {
                     ForEach(HotkeyChoice.allCases) { choice in
                         Text(choice.label).tag(choice)
+                    }
+                }
+                Picker("Command-mode key (edit selection by voice)", selection: Binding(
+                    get: { configStore.config.commandHotkey?.rawValue ?? "off" },
+                    set: { configStore.config.commandHotkey = HotkeyChoice(rawValue: $0) }
+                )) {
+                    Text("Disabled").tag("off")
+                    ForEach(HotkeyChoice.allCases.filter { $0 != configStore.config.hotkey }) { choice in
+                        Text(choice.label).tag(choice.rawValue)
                     }
                 }
                 Picker("Microphone", selection: Binding(
@@ -89,6 +100,42 @@ struct SettingsView: View {
                         .monospacedDigit()
                         .frame(width: 36, alignment: .trailing)
                 }
+            }
+
+            Section("Per-app tone") {
+                ForEach(configStore.config.appTones.keys.sorted(), id: \.self) { bundleID in
+                    HStack {
+                        Text(bundleID)
+                            .font(.caption)
+                            .frame(width: 180, alignment: .leading)
+                            .lineLimit(1)
+                            .truncationMode(.middle)
+                        TextField("tone", text: Binding(
+                            get: { configStore.config.appTones[bundleID] ?? "" },
+                            set: { configStore.config.appTones[bundleID] = $0 }
+                        ))
+                        .font(.caption)
+                        Button(role: .destructive) {
+                            configStore.config.appTones.removeValue(forKey: bundleID)
+                        } label: { Image(systemName: "minus.circle") }
+                        .buttonStyle(.borderless)
+                    }
+                }
+                HStack {
+                    TextField("bundle id (e.g. com.apple.mail)", text: $newToneBundleID)
+                        .font(.caption)
+                    TextField("tone hint", text: $newToneHint)
+                        .font(.caption)
+                    Button("Add") {
+                        let key = newToneBundleID.trimmingCharacters(in: .whitespaces)
+                        guard !key.isEmpty, !newToneHint.isEmpty else { return }
+                        configStore.config.appTones[key] = newToneHint
+                        newToneBundleID = ""; newToneHint = ""
+                    }
+                }
+                Text("The frontmost app's bundle id decides the register hint sent to the cleanup model.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
             }
 
             Section("General") {

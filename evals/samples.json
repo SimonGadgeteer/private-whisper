@@ -50,5 +50,29 @@
     "id": "fr-2",
     "language": "fr",
     "raw": "Bonjour Madame Rochat, euh, alors concernant la la livraison pour Lausanne, bah on peut confirmer le le quinze avril, euh, avec un montant de de huit mille cinq cents francs, voilà, merci beaucoup."
+  },
+  {
+    "id": "en-4",
+    "language": "en",
+    "raw": "So the meeting is on Tuesday, uh no wait, Wednesday at, um, at 2 PM, and please tell tell Marc to bring the the quarterly numbers.",
+    "note": "backtracking: Tuesday must be dropped, Wednesday kept"
+  },
+  {
+    "id": "de-4",
+    "language": "de",
+    "raw": "Also wir brauchen drei Sachen, ähm, erstens das Budget für Q3, zweitens äh den Zeitplan für die Migration, und drittens die Freigabe von Herrn Keller.",
+    "note": "spoken enumeration must become a list"
+  },
+  {
+    "id": "ch-3",
+    "language": "de",
+    "raw": "Also merci nochmals, ähm, das Treffen ist am Freitag, äh nei warte, am Donnerstag um halb drei, und äh bring bitte de Offerte für d'Firma Steiner mit, gäll.",
+    "note": "Swiss backtracking: Freitag dropped, Donnerstag kept, Helvetisms stay"
+  },
+  {
+    "id": "fr-3",
+    "language": "fr",
+    "raw": "Alors pour le projet il y a euh trois priorités, premièrement le budget, deuxièmement euh le planning de livraison, et troisièmement la validation par Madame Rochat.",
+    "note": "French enumeration must become a list"
   }
 ]

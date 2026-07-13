@@ -10,10 +10,68 @@ struct MainWindowView: View {
         TabView {
             StatisticsView(statsStore: statsStore)
                 .tabItem { Label("Statistics", systemImage: "chart.bar") }
+            DictionaryView(configStore: configStore)
+                .tabItem { Label("Dictionary", systemImage: "character.book.closed") }
             SettingsView(configStore: configStore)
                 .tabItem { Label("Settings", systemImage: "gearshape") }
         }
         .frame(width: 520, height: 600)
+    }
+}
+
+/// Personal dictionary: names, jargon, and Swiss terms. Terms are fed to
+/// whisper as a recognition bias AND to the cleanup model as a glossary.
+private struct DictionaryView: View {
+    @ObservedObject var configStore: ConfigStore
+    @State private var newTerm = ""
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Names, jargon, and product terms you dictate often. Whisper is biased toward these spellings, and the cleanup model enforces them (e.g. \"Sonepar\", \"Müller-Weber\", \"Winterthur\", \"ERP-Migration\").")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+
+            HStack {
+                TextField("Add a term…", text: $newTerm)
+                    .onSubmit(addTerm)
+                Button("Add", action: addTerm)
+                    .disabled(newTerm.trimmingCharacters(in: .whitespaces).isEmpty)
+            }
+
+            if configStore.config.dictionary.isEmpty {
+                Spacer()
+                Text("No terms yet.")
+                    .foregroundStyle(.secondary)
+                    .frame(maxWidth: .infinity, alignment: .center)
+                Spacer()
+            } else {
+                List {
+                    ForEach(configStore.config.dictionary, id: \.self) { term in
+                        HStack {
+                            Text(term)
+                            Spacer()
+                            Button(role: .destructive) {
+                                configStore.config.dictionary.removeAll { $0 == term }
+                            } label: { Image(systemName: "minus.circle") }
+                            .buttonStyle(.borderless)
+                        }
+                    }
+                }
+                .listStyle(.inset)
+                Text("\(configStore.config.dictionary.count) terms (the first 80 are used for whisper biasing)")
+                    .font(.caption)
+                    .foregroundStyle(.tertiary)
+            }
+        }
+        .padding(16)
+    }
+
+    private func addTerm() {
+        let term = newTerm.trimmingCharacters(in: .whitespaces)
+        guard !term.isEmpty, !configStore.config.dictionary.contains(term) else { return }
+        configStore.config.dictionary.append(term)
+        configStore.config.dictionary.sort { $0.localizedCaseInsensitiveCompare($1) == .orderedAscending }
+        newTerm = ""
     }
 }
 

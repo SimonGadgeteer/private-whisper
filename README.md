@@ -29,6 +29,10 @@ On first launch, grant:
 - No text field focused / password field → a HUD shows the text with a Copy button instead.
 - Menu bar → **Open Private Whisper…** for the app window: usage statistics (dictations, words, latency, per-language and per-day breakdown — counters only, no transcript content) and Settings (hotkey, microphone, whisper model, LM Studio URL/model with connection test, cleanup toggle/timeout, notch indicator, history logging, launch at login).
 - A Siri-style floating capsule below the notch shows live state: waveform while recording, shimmer while transcribing, checkmark when inserted.
+- **Personal dictionary** (app window → Dictionary): names/jargon are biased into whisper's recognition and enforced by the cleanup model.
+- **Backtracking & lists**: "am Dienstag — nein, ich meine Mittwoch" keeps only Mittwoch; "erstens… zweitens…" becomes a formatted list.
+- **Per-app tone**: the cleanup register adapts to the frontmost app (formal in Mail, casual in Slack, verbatim-technical in VS Code) — editable in Settings.
+- **Command mode**: select text anywhere, hold **Right Command**, speak an instruction ("make this more concise", "übersetze auf Englisch") — the selection is replaced by the edited version.
 
 ### Remote cleanup (Mac Mini)
 

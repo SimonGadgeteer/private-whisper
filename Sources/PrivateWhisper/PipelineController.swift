@@ -1,7 +1,8 @@
 import AppKit
 import Foundation
 
-/// Orchestrates key press → record → transcribe → cleanup → inject.
+/// Orchestrates key press → record → transcribe → cleanup → inject, plus
+/// command mode (voice-edit the current selection).
 ///
 /// Re-trigger policy (PRD §7.7): a new dictation started while the previous
 /// one is still processing is REJECTED with a brief flash. Queuing would risk
@@ -15,6 +16,13 @@ final class PipelineController {
 
     private var transcriber: WhisperCppTranscriber
     private var loadedModelPath: URL
+
+    /// What the current recording is for.
+    private enum SessionKind {
+        case dictation(toneHint: String?)
+        case command(selection: String)
+    }
+    private var sessionKind: SessionKind = .dictation(toneHint: nil)
 
     /// Live mic RMS while recording, delivered on the main thread.
     var onAudioLevel: ((Float) -> Void)?
@@ -59,18 +67,21 @@ final class PipelineController {
         return transcriber
     }
 
-    func hotkeyPressed() {
-        // Only .recording and .processing block a new dictation; transient
-        // states (.injected, .warning) must never lock out the hotkey.
+    /// Only .recording and .processing block a new session; transient states
+    /// (.injected, .warning) must never lock out the hotkey.
+    private func canStartSession() -> Bool {
         switch statusItem.state {
         case .recording:
-            return
+            return false
         case .processing:
             hud.flash("Still processing…")
-            return
+            return false
         case .idle, .injected, .warning:
-            break
+            return true
         }
+    }
+
+    private func startRecording() {
         do {
             try recorder.start(deviceUID: configStore.config.microphoneUID)
             statusItem.setState(.recording)
@@ -81,7 +92,46 @@ final class PipelineController {
         }
     }
 
+    // MARK: - Dictation
+
+    func hotkeyPressed() {
+        guard canStartSession() else { return }
+        // Capture the target app now — focus can change during processing.
+        let bundleID = NSWorkspace.shared.frontmostApplication?.bundleIdentifier
+        let toneHint = bundleID.flatMap { configStore.config.appTones[$0] }
+        sessionKind = .dictation(toneHint: toneHint)
+        startRecording()
+    }
+
     func hotkeyReleased() {
+        finishRecording()
+    }
+
+    // MARK: - Command mode
+
+    func commandPressed() {
+        guard configStore.config.commandHotkey != nil, canStartSession() else { return }
+        Task {
+            guard let selection = await SelectionCapture.selectedText() else {
+                hud.flash("Command mode: select some text first", seconds: 2)
+                return
+            }
+            // Re-check: the async selection capture takes ~100ms and the user
+            // may have released the key already — HotkeyMonitor still fires
+            // onRelease, which no-ops if we never started recording.
+            guard canStartSession() else { return }
+            sessionKind = .command(selection: selection)
+            startRecording()
+        }
+    }
+
+    func commandReleased() {
+        finishRecording()
+    }
+
+    // MARK: - Shared pipeline
+
+    private func finishRecording() {
         // Keyed off the recorder, not the UI state: even if something clobbered
         // the .recording state, the mic must never be left running.
         guard recorder.isRecording else { return }
@@ -98,12 +148,14 @@ final class PipelineController {
 
         statusItem.setState(.processing)
         let config = configStore.config
+        let kind = sessionKind
         let transcriber = currentTranscriber()
 
         Task {
             do {
                 let tStart = Date()
-                let result = try await transcriber.transcribe(samples: samples)
+                let result = try await transcriber.transcribe(
+                    samples: samples, vocabulary: config.dictionary)
                 let transcriptionSeconds = Date().timeIntervalSince(tStart)
 
                 guard !result.text.isEmpty else {
@@ -112,51 +164,83 @@ final class PipelineController {
                     return
                 }
 
-                var finalText = result.text
-                var cleanupSeconds: Double?
-                var fellBack = false
-
-                if config.cleanupEnabled {
-                    let cleanup = CleanupService(
-                        baseURL: config.lmStudioURL,
-                        model: config.cleanupModel,
-                        timeout: config.cleanupTimeoutSeconds)
-                    let cStart = Date()
-                    do {
-                        finalText = try await cleanup.cleanup(
-                            transcript: result.text, language: result.language)
-                        cleanupSeconds = Date().timeIntervalSince(cStart)
-                    } catch {
-                        // PRD §4.1-C: never lose the dictation — fall back to raw.
-                        fellBack = true
-                        dlog("Cleanup failed, using raw transcript: \(error.localizedDescription)")
-                    }
-                }
-
-                deliver(finalText, fellBack: fellBack)
-
-                StatsStore.shared.record(
-                    words: finalText.split(whereSeparator: \.isWhitespace).count,
-                    language: result.language,
-                    audioSeconds: audioSeconds,
-                    transcriptionSeconds: transcriptionSeconds,
-                    cleanupSeconds: cleanupSeconds,
-                    fellBack: fellBack)
-
-                if config.historyLoggingEnabled {
-                    HistoryLogger.append(.init(
-                        timestamp: ISO8601DateFormatter().string(from: Date()),
-                        language: result.language,
-                        rawTranscript: result.text,
-                        cleanedText: fellBack || !config.cleanupEnabled ? nil : finalText,
-                        audioSeconds: audioSeconds,
-                        transcriptionSeconds: transcriptionSeconds,
-                        cleanupSeconds: cleanupSeconds))
+                switch kind {
+                case .dictation(let toneHint):
+                    await finishDictation(
+                        result: result, config: config, toneHint: toneHint,
+                        audioSeconds: audioSeconds, transcriptionSeconds: transcriptionSeconds)
+                case .command(let selection):
+                    await finishCommand(instruction: result.text, selection: selection, config: config)
                 }
             } catch {
                 statusItem.setState(.warning("Transcription failed"))
                 hud.flash("Transcription failed: \(error.localizedDescription)", seconds: 4)
             }
+        }
+    }
+
+    private func finishDictation(
+        result: TranscriptionResult, config: AppConfig, toneHint: String?,
+        audioSeconds: Double, transcriptionSeconds: Double
+    ) async {
+        var finalText = result.text
+        var cleanupSeconds: Double?
+        var fellBack = false
+
+        if config.cleanupEnabled {
+            let cleanup = CleanupService(
+                baseURL: config.lmStudioURL,
+                model: config.cleanupModel,
+                timeout: config.cleanupTimeoutSeconds)
+            let cStart = Date()
+            do {
+                finalText = try await cleanup.cleanup(
+                    transcript: result.text, language: result.language,
+                    glossary: config.dictionary, toneHint: toneHint)
+                cleanupSeconds = Date().timeIntervalSince(cStart)
+            } catch {
+                // PRD §4.1-C: never lose the dictation — fall back to raw.
+                fellBack = true
+                dlog("Cleanup failed, using raw transcript: \(error.localizedDescription)")
+            }
+        }
+
+        deliver(finalText, fellBack: fellBack)
+
+        StatsStore.shared.record(
+            words: finalText.split(whereSeparator: \.isWhitespace).count,
+            language: result.language,
+            audioSeconds: audioSeconds,
+            transcriptionSeconds: transcriptionSeconds,
+            cleanupSeconds: cleanupSeconds,
+            fellBack: fellBack)
+
+        if config.historyLoggingEnabled {
+            HistoryLogger.append(.init(
+                timestamp: ISO8601DateFormatter().string(from: Date()),
+                language: result.language,
+                rawTranscript: result.text,
+                cleanedText: fellBack || !config.cleanupEnabled ? nil : finalText,
+                audioSeconds: audioSeconds,
+                transcriptionSeconds: transcriptionSeconds,
+                cleanupSeconds: cleanupSeconds))
+        }
+    }
+
+    private func finishCommand(instruction: String, selection: String, config: AppConfig) async {
+        // Command mode has no raw fallback that makes sense — the LLM *is* the
+        // feature. Longer timeout: rewrites scale with selection length.
+        let cleanup = CleanupService(
+            baseURL: config.lmStudioURL,
+            model: config.cleanupModel,
+            timeout: max(30, config.cleanupTimeoutSeconds * 2))
+        do {
+            dlog("Command mode: \"\(instruction.prefix(60))\" on \(selection.count) chars")
+            let rewritten = try await cleanup.rewrite(selection: selection, instruction: instruction)
+            deliver(rewritten, fellBack: false)
+        } catch {
+            statusItem.setState(.warning("Command mode failed"))
+            hud.flash("Command mode failed: \(error.localizedDescription)", seconds: 4)
         }
     }
 

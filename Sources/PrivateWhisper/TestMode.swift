@@ -35,7 +35,7 @@ enum TestMode {
                 try await transcriber.preload()
                 let modelLoadSeconds = Date().timeIntervalSince(loadStart)
                 let tStart = Date()
-                let result = try await transcriber.transcribe(samples: samples)
+                let result = try await transcriber.transcribe(samples: samples, vocabulary: config.dictionary)
                 let transcriptionSeconds = Date().timeIntervalSince(tStart)
 
                 var output: [String: Any] = [
@@ -54,7 +54,8 @@ enum TestMode {
                     let cStart = Date()
                     do {
                         let cleaned = try await cleanup.cleanup(
-                            transcript: result.text, language: result.language)
+                            transcript: result.text, language: result.language,
+                            glossary: config.dictionary)
                         output["cleaned"] = cleaned
                         output["cleanup_seconds"] = Date().timeIntervalSince(cStart)
                         output["cleanup_model"] = config.cleanupModel
