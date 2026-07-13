@@ -17,7 +17,7 @@ The PRD listed **distil-large-v3** as the latency fallback, but distil-whisper i
 
 ## 4. Cleanup model: see eval results below
 
-- Qwen3.5 / Qwen3.6 / Gemma-4 turned out to be **thinking models**; for a latency-critical, mechanical rewrite task, reasoning is pure overhead (qwen3.5-4b spent >15 s thinking about removing "um"). Neither `/no_think` nor `chat_template_kwargs: {enable_thinking: false}` disables Qwen 3.5/3.6 thinking; **qwen3-8b does honor `/no_think`** and the app appends it for qwen-family models.
+- Qwen3.5 / Qwen3.6 / Gemma-4 are **thinking models**; for a latency-critical, mechanical rewrite task, reasoning is pure overhead (qwen3.5-4b spent >15 s thinking about removing "um"). `/no_think` and `chat_template_kwargs: {enable_thinking: false}` do NOT disable Qwen 3.5/3.6 thinking — the knob that works is the request parameter **`"reasoning_effort": "none"`**, which the app now always sends (non-reasoning models ignore it). qwen3-8b additionally honors `/no_think` in the prompt.
 - `max_tokens` includes +2048 headroom so reasoning models don't hit the cap mid-thought and return empty content (harmless for non-thinking models).
 - No Qwen3.6 model fits the 16 GB Mac Mini (smallest is 27B dense ≈ 15 GB at 4-bit); the installed 27B was evaluated as an out-of-budget reference only.
 
@@ -33,7 +33,7 @@ The PRD listed **distil-large-v3** as the latency fallback, but distil-whisper i
 | qwen3.5-4b | yes | 5.3 | 71.6 | 2 |
 | qwen3.5-9b | yes | 4.6 | 98.4 | 4 |
 
-**Default: `qwen/qwen3.5-4b` with `reasoning_effort: "none"`** (updated same day — a cross-check against a second AI's benchmark revealed the request parameter that fully disables Qwen 3.5 thinking, which this eval had missed; rerun fairly the 4B scores 10.0/10 at 0.46 s in 3.06 GB, beating qwen3-8b on all axes). Previous pick `qwen/qwen3-8b` — 9.9/10 at 0.67 s median — remains the runner-up. `ministral-3-14b-reasoning` is the quality-max option (10/10 @ 1.84 s) for the 128 GB machine but exceeds the Mini budget; `ministral-3-3b` is fastest but restructures text and adds markdown. Qwen 3.5 models are disqualified: always-thinking (70–100 s) and the only candidates that translated samples into the wrong language. Full analysis: evals/results.md.
+**Default: `qwen/qwen3.5-4b` with `reasoning_effort: "none"`** (updated same day — a cross-check against a second AI's benchmark revealed the request parameter that fully disables Qwen 3.5 thinking, which this eval had missed; rerun fairly the 4B scores 10.0/10 at 0.46 s in 3.06 GB, beating qwen3-8b on all axes). Previous pick `qwen/qwen3-8b` — 9.9/10 at 0.67 s median — remains the runner-up. `ministral-3-14b-reasoning` is the quality-max option (10/10 @ 1.84 s) for the 128 GB machine but exceeds the Mini budget; `ministral-3-3b` is fastest but restructures text and adds markdown. (The table above shows Qwen 3.5 in thinking mode — superseded; see the correction in evals/results.md.) Full analysis: evals/results.md.
 
 ## 5. Re-trigger while processing: reject (PRD §7.7)
 
