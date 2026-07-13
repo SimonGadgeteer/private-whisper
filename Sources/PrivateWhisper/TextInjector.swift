@@ -29,7 +29,12 @@ enum TextInjector {
         }
         switch focusedElementAssessment() {
         case .noFocus:
-            return .needsHUD(reason: "No text field is focused")
+            // The systemwide AX probe fails in many apps (Electron, browsers,
+            // web views) even when a text field clearly has focus — "cannot
+            // determine" must not block injection. A Cmd+V with nothing
+            // focused is a harmless no-op, and the menu bar keeps a
+            // "Copy Last Dictation" fallback.
+            dlog("AX focused-element probe inconclusive — injecting anyway")
         case .nonText(let role):
             return .needsHUD(reason: "Focused element (\(role)) is not a text field")
         case .textLikeOrUnknown:

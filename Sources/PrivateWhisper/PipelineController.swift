@@ -159,6 +159,7 @@ final class PipelineController {
     }
 
     private func deliver(_ text: String, fellBack: Bool) {
+        statusItem.lastDictation = text
         switch TextInjector.inject(text) {
         case .injected:
             dlog("Injected \(text.count) chars")

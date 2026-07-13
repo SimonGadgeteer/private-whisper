@@ -88,10 +88,20 @@ def clean_sample(model, raw, language):
 
 
 def judge(judge_model, raw, cleaned):
-    content, _, _ = chat(judge_model, [
-        {"role": "system", "content": JUDGE_INSTRUCTIONS},
-        {"role": "user", "content": f"RAW:\n{raw}\n\nCLEANED:\n{cleaned}"},
-    ], temperature=0.0)
+    """Score one row. Never raises — a failed judge call (after retries) returns None."""
+    content = None
+    for attempt in range(3):
+        try:
+            content, _, _ = chat(judge_model, [
+                {"role": "system", "content": JUDGE_INSTRUCTIONS},
+                {"role": "user", "content": f"RAW:\n{raw}\n\nCLEANED:\n{cleaned}"},
+            ], temperature=0.0)
+            break
+        except Exception as exc:
+            print(f"    judge attempt {attempt + 1} failed: {exc}", flush=True)
+            time.sleep(5 * (attempt + 1))
+    if content is None:
+        return None
     match = re.search(r"\{[^{}]*\}", content)
     if not match:
         return None
@@ -116,12 +126,21 @@ def main():
         print(f"\n=== {model} ({note}) ===", flush=True)
         unload_all()
         # Warm-up: first call JIT-loads the model; measured separately.
-        try:
-            _, load_time, _ = clean_sample(model, "Um, hello there.", "en")
-        except Exception as exc:
-            print(f"  SKIPPED (load failed: {exc})", flush=True)
+        # Retried because JIT loads occasionally fail transiently (HTTP 400 /
+        # dropped connection right after an unload).
+        load_time = None
+        for attempt in range(3):
+            try:
+                _, load_time, _ = clean_sample(model, "Um, hello there.", "en")
+                break
+            except Exception as exc:
+                load_exc = exc
+                print(f"  load attempt {attempt + 1} failed: {exc}", flush=True)
+                time.sleep(10)
+        if load_time is None:
+            print(f"  SKIPPED (load failed: {load_exc})", flush=True)
             results.append({"model": model, "fits_mini": fits_mini, "note": note,
-                            "error": str(exc)})
+                            "error": str(load_exc)})
             continue
 
         rows = []
@@ -137,6 +156,12 @@ def main():
             print(f"  {sample['id']}: {elapsed:5.2f}s  rtoks={rtoks:4d}  {cleaned[:70]}", flush=True)
         results.append({"model": model, "fits_mini": fits_mini, "note": note,
                         "load_seconds": round(load_time, 2), "rows": rows})
+
+    # Checkpoint: persist raw candidate outputs BEFORE judging, so a judge
+    # failure can never lose the (expensive) generation work.
+    (HERE / f"{args.out}-raw.json").write_text(
+        json.dumps({"samples": len(samples), "detail": results}, indent=2, ensure_ascii=False))
+    print(f"\nraw outputs checkpointed: {HERE / (args.out + '-raw.json')}", flush=True)
 
     # Judge pass — load the judge once, score everything.
     print(f"\n=== judging with {args.judge} ===", flush=True)

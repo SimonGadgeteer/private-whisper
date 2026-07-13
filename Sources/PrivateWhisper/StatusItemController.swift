@@ -18,12 +18,20 @@ final class StatusItemController {
     var onToggleCleanup: (() -> Void)?
     var onOpenSettings: (() -> Void)?
 
+    /// Most recent dictation result; menu fallback in case injection no-ops.
+    var lastDictation: String? {
+        didSet {
+            statusItem.menu?.item(withTag: 101)?.isEnabled = lastDictation != nil
+        }
+    }
+
     private(set) var state: AppState = .idle
 
     init() {
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
 
         let menu = NSMenu()
+        menu.autoenablesItems = false
         stateMenuItem.isEnabled = false
         menu.addItem(stateMenuItem)
         menu.addItem(.separator())
@@ -33,6 +41,13 @@ final class StatusItemController {
         cleanupItem.target = self
         cleanupItem.tag = 100
         menu.addItem(cleanupItem)
+
+        let copyLastItem = NSMenuItem(
+            title: "Copy Last Dictation", action: #selector(copyLast), keyEquivalent: "")
+        copyLastItem.target = self
+        copyLastItem.tag = 101
+        copyLastItem.isEnabled = false
+        menu.addItem(copyLastItem)
 
         let settingsItem = NSMenuItem(
             title: "Settings…", action: #selector(openSettings), keyEquivalent: ",")
@@ -100,4 +115,10 @@ final class StatusItemController {
 
     @objc private func toggleCleanup() { onToggleCleanup?() }
     @objc private func openSettings() { onOpenSettings?() }
+
+    @objc private func copyLast() {
+        guard let lastDictation else { return }
+        NSPasteboard.general.clearContents()
+        NSPasteboard.general.setString(lastDictation, forType: .string)
+    }
 }
