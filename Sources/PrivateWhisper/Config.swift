@@ -46,6 +46,9 @@ struct AppConfig: Codable, Equatable {
     var appTones: [String: String] = AppConfig.defaultAppTones
     /// Hold-to-speak hotkey for command mode (voice-edit the selection). nil = disabled.
     var commandHotkey: HotkeyChoice? = .rightCommand
+    /// Experimental: diff the target field after injection and suggest
+    /// dictionary terms from the user's manual respellings.
+    var correctionLearningEnabled: Bool = true
 
     static let defaultAppTones: [String: String] = [
         "com.apple.mail": "formal email register",
@@ -107,6 +110,7 @@ struct AppConfig: Codable, Equatable {
         dictionary = try c.decodeIfPresent([String].self, forKey: .dictionary) ?? defaults.dictionary
         appTones = try c.decodeIfPresent([String: String].self, forKey: .appTones) ?? defaults.appTones
         commandHotkey = try c.decodeIfPresent(HotkeyChoice.self, forKey: .commandHotkey) ?? defaults.commandHotkey
+        correctionLearningEnabled = try c.decodeIfPresent(Bool.self, forKey: .correctionLearningEnabled) ?? defaults.correctionLearningEnabled
     }
 
     init() {}

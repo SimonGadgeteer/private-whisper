@@ -15,6 +15,13 @@ final class HUDController {
         }
     }
 
+    /// Correction-learning suggestions with one-click Add.
+    func showSuggestions(_ terms: [String], onAdd: @escaping (String) -> Void) {
+        show(width: 300, height: CGFloat(56 + terms.count * 34), autoDismiss: 14) {
+            SuggestionHUDView(terms: terms, onAdd: onAdd)
+        }
+    }
+
     func flash(_ message: String, seconds: Double = 1.5) {
         show(width: 260, height: 60, autoDismiss: seconds) {
             Text(message)
@@ -67,6 +74,31 @@ final class HUDController {
         dismissTask = Task { [weak self] in
             try? await Task.sleep(nanoseconds: UInt64(autoDismiss * 1_000_000_000))
             if !Task.isCancelled { self?.dismiss() }
+        }
+    }
+}
+
+private struct SuggestionHUDView: View {
+    let terms: [String]
+    let onAdd: (String) -> Void
+    @State private var added: Set<String> = []
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Label("Add to your dictionary?", systemImage: "character.book.closed")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+            ForEach(terms, id: \.self) { term in
+                HStack {
+                    Text(term).font(.system(size: 13, weight: .medium))
+                    Spacer()
+                    Button(added.contains(term) ? "Added ✓" : "Add") {
+                        onAdd(term)
+                        added.insert(term)
+                    }
+                    .disabled(added.contains(term))
+                }
+            }
         }
     }
 }

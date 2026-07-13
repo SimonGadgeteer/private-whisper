@@ -33,6 +33,7 @@ On first launch, grant:
 - **Backtracking & lists**: "am Dienstag — nein, ich meine Mittwoch" keeps only Mittwoch; "erstens… zweitens…" becomes a formatted list.
 - **Per-app tone**: the cleanup register adapts to the frontmost app (formal in Mail, casual in Slack, verbatim-technical in VS Code) — editable in Settings.
 - **Command mode**: select text anywhere, hold **Right Command**, speak an instruction ("make this more concise", "übersetze auf Englisch") — the selection is replaced by the edited version.
+- **Correction learning (experimental)**: after injecting, the app re-reads the target field 10–25 s later; words you manually re-spelled ("Kohler"→"Koller") appear as one-click dictionary suggestions. Suggestion-only, never automatic; works in AX-friendly apps (Mail, TextEdit, native fields), silently inactive elsewhere. Toggle in Settings.
 
 ### Remote cleanup (Mac Mini)
 

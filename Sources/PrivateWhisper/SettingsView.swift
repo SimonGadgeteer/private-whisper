@@ -140,6 +140,7 @@ struct SettingsView: View {
 
             Section("General") {
                 Toggle("Notch activity indicator", isOn: $configStore.config.notchIndicatorEnabled)
+                Toggle("Learn from corrections (experimental)", isOn: $configStore.config.correctionLearningEnabled)
                 Toggle("Log dictation history (local JSONL)", isOn: $configStore.config.historyLoggingEnabled)
                 Toggle("Launch at login", isOn: Binding(
                     get: { configStore.config.launchAtLogin },

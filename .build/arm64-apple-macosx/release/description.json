@@ -57,6 +57,10 @@
         },
         {
           "kind" : "file",
+          "name" : "/Users/simon/Documents/claude/whisper_local/Sources/PrivateWhisper/CorrectionLearner.swift"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/simon/Documents/claude/whisper_local/Sources/PrivateWhisper/HUDController.swift"
         },
         {
@@ -141,6 +145,7 @@
         "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/PrivateWhisper.build/AudioRecorder.swift.o",
         "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/PrivateWhisper.build/CleanupService.swift.o",
         "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/PrivateWhisper.build/Config.swift.o",
+        "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/PrivateWhisper.build/CorrectionLearner.swift.o",
         "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/PrivateWhisper.build/HUDController.swift.o",
         "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/PrivateWhisper.build/HistoryLogger.swift.o",
         "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/PrivateWhisper.build/HotkeyMonitor.swift.o",
@@ -242,6 +247,10 @@
         },
         {
           "kind" : "file",
+          "name" : "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/PrivateWhisper.build/CorrectionLearner.swift.o"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/PrivateWhisper.build/HUDController.swift.o"
         },
         {
@@ -316,6 +325,7 @@
         "/Users/simon/Documents/claude/whisper_local/Sources/PrivateWhisper/AudioRecorder.swift",
         "/Users/simon/Documents/claude/whisper_local/Sources/PrivateWhisper/CleanupService.swift",
         "/Users/simon/Documents/claude/whisper_local/Sources/PrivateWhisper/Config.swift",
+        "/Users/simon/Documents/claude/whisper_local/Sources/PrivateWhisper/CorrectionLearner.swift",
         "/Users/simon/Documents/claude/whisper_local/Sources/PrivateWhisper/HUDController.swift",
         "/Users/simon/Documents/claude/whisper_local/Sources/PrivateWhisper/HistoryLogger.swift",
         "/Users/simon/Documents/claude/whisper_local/Sources/PrivateWhisper/HotkeyMonitor.swift",
@@ -353,6 +363,7 @@
       "/Users/simon/Documents/claude/whisper_local/Sources/PrivateWhisper/AudioRecorder.swift",
       "/Users/simon/Documents/claude/whisper_local/Sources/PrivateWhisper/CleanupService.swift",
       "/Users/simon/Documents/claude/whisper_local/Sources/PrivateWhisper/Config.swift",
+      "/Users/simon/Documents/claude/whisper_local/Sources/PrivateWhisper/CorrectionLearner.swift",
       "/Users/simon/Documents/claude/whisper_local/Sources/PrivateWhisper/HUDController.swift",
       "/Users/simon/Documents/claude/whisper_local/Sources/PrivateWhisper/HistoryLogger.swift",
       "/Users/simon/Documents/claude/whisper_local/Sources/PrivateWhisper/HotkeyMonitor.swift",
@@ -479,6 +490,10 @@
         },
         {
           "kind" : "file",
+          "name" : "/Users/simon/Documents/claude/whisper_local/Sources/PrivateWhisper/CorrectionLearner.swift"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/simon/Documents/claude/whisper_local/Sources/PrivateWhisper/HUDController.swift"
         },
         {
@@ -570,6 +585,10 @@
         {
           "kind" : "file",
           "name" : "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/PrivateWhisper.build/Config.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/PrivateWhisper.build/CorrectionLearner.swift.o"
         },
         {
           "kind" : "file",

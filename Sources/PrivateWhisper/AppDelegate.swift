@@ -21,6 +21,18 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         hud = HUDController()
         pipeline = PipelineController(configStore: configStore, statusItem: statusItem, hud: hud)
         notch = NotchIndicatorController(configStore: configStore)
+        let learner = CorrectionLearner(configStore: configStore)
+        learner.onSuggestions = { [weak self] terms in
+            guard let self else { return }
+            hud.showSuggestions(terms) { term in
+                guard !self.configStore.config.dictionary.contains(term) else { return }
+                self.configStore.config.dictionary.append(term)
+                self.configStore.config.dictionary.sort {
+                    $0.localizedCaseInsensitiveCompare($1) == .orderedAscending
+                }
+            }
+        }
+        pipeline.correctionLearner = learner
         statusItem.onStateChange = { [weak self] state in self?.notch.update(state: state) }
         pipeline.onAudioLevel = { [weak self] level in self?.notch.pushLevel(level) }
 

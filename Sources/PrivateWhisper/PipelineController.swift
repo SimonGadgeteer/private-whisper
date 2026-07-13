@@ -26,6 +26,8 @@ final class PipelineController {
 
     /// Live mic RMS while recording, delivered on the main thread.
     var onAudioLevel: ((Float) -> Void)?
+    /// Set by AppDelegate; watches injected fields for manual corrections.
+    var correctionLearner: CorrectionLearner?
 
     init(configStore: ConfigStore, statusItem: StatusItemController, hud: HUDController) {
         self.configStore = configStore
@@ -205,7 +207,10 @@ final class PipelineController {
             }
         }
 
-        deliver(finalText, fellBack: fellBack)
+        let delivery = deliver(finalText, fellBack: fellBack)
+        if case .injected = delivery {
+            correctionLearner?.watch(injected: finalText)
+        }
 
         StatsStore.shared.record(
             words: finalText.split(whereSeparator: \.isWhitespace).count,
@@ -237,7 +242,7 @@ final class PipelineController {
         do {
             dlog("Command mode: \"\(instruction.prefix(60))\" on \(selection.count) chars")
             let rewritten = try await cleanup.rewrite(selection: selection, instruction: instruction)
-            deliver(rewritten, fellBack: false)
+            _ = deliver(rewritten, fellBack: false)
         } catch {
             statusItem.setState(.warning("Command mode failed"))
             hud.flash("Command mode failed: \(error.localizedDescription)", seconds: 4)
@@ -256,9 +261,11 @@ final class PipelineController {
         _ = semaphore.wait(timeout: .now() + 3)
     }
 
-    private func deliver(_ text: String, fellBack: Bool) {
+    @discardableResult
+    private func deliver(_ text: String, fellBack: Bool) -> InjectionOutcome {
         statusItem.lastDictation = text
-        switch TextInjector.inject(text) {
+        let outcome = TextInjector.inject(text)
+        switch outcome {
         case .injected:
             dlog("Injected \(text.count) chars")
             statusItem.setState(
@@ -269,5 +276,6 @@ final class PipelineController {
                 fellBack ? .warning("Cleanup offline — raw transcript shown") : .idle)
             hud.showText(text, reason: reason)
         }
+        return outcome
     }
 }
