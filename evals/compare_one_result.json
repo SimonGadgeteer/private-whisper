@@ -1,0 +1,128 @@
+{
+  "model": "localdictate-cleanup",
+  "quality": 5.5,
+  "median_seconds": 67.16,
+  "lang_fails": 3,
+  "rows": [
+    {
+      "id": "en-1",
+      "cleaned": "",
+      "seconds": 35.77,
+      "reasoning_tokens": 4351,
+      "scores": {
+        "same_language": 0,
+        "fillers_removed": 0,
+        "meaning_preserved": 0,
+        "format_clean": 1
+      }
+    },
+    {
+      "id": "en-2",
+      "cleaned": "",
+      "seconds": 46.47,
+      "reasoning_tokens": 4351,
+      "scores": {
+        "same_language": 0,
+        "fillers_removed": 2,
+        "meaning_preserved": 0,
+        "format_clean": 1
+      }
+    },
+    {
+      "id": "en-3",
+      "cleaned": "Hi Sarah, quick update, the customer in Geneva confirmed the order, forty five thousand francs, delivery in calendar week twelve, so please, prepare the invoice.",
+      "seconds": 67.62,
+      "reasoning_tokens": 3581,
+      "scores": {
+        "same_language": 4,
+        "fillers_removed": 2,
+        "meaning_preserved": 3,
+        "format_clean": 1
+      }
+    },
+    {
+      "id": "de-1",
+      "cleaned": "",
+      "seconds": 97.62,
+      "reasoning_tokens": 4351,
+      "scores": {
+        "same_language": 4,
+        "fillers_removed": 0,
+        "meaning_preserved": 0,
+        "format_clean": 1
+      }
+    },
+    {
+      "id": "de-2",
+      "cleaned": "",
+      "seconds": 74.43,
+      "reasoning_tokens": 4351,
+      "scores": {
+        "same_language": 4,
+        "fillers_removed": 2,
+        "meaning_preserved": 0,
+        "format_clean": 1
+      }
+    },
+    {
+      "id": "de-3",
+      "cleaned": "",
+      "seconds": 80.43,
+      "reasoning_tokens": 4351,
+      "scores": {
+        "same_language": 4,
+        "fillers_removed": 2,
+        "meaning_preserved": 0,
+        "format_clean": 1
+      }
+    },
+    {
+      "id": "ch-1",
+      "cleaned": "",
+      "seconds": 66.37,
+      "reasoning_tokens": 4351,
+      "scores": {
+        "same_language": 4,
+        "fillers_removed": 2,
+        "meaning_preserved": 0,
+        "format_clean": 1
+      }
+    },
+    {
+      "id": "ch-2",
+      "cleaned": "",
+      "seconds": 67.16,
+      "reasoning_tokens": 4351,
+      "scores": {
+        "same_language": 4,
+        "fillers_removed": 2,
+        "meaning_preserved": 0,
+        "format_clean": 1
+      }
+    },
+    {
+      "id": "fr-1",
+      "cleaned": "",
+      "seconds": 66.98,
+      "reasoning_tokens": 4351,
+      "scores": {
+        "same_language": 0,
+        "fillers_removed": 0,
+        "meaning_preserved": 0,
+        "format_clean": 1
+      }
+    },
+    {
+      "id": "fr-2",
+      "cleaned": "",
+      "seconds": 66.9,
+      "reasoning_tokens": 4351,
+      "scores": {
+        "same_language": 4,
+        "fillers_removed": 2,
+        "meaning_preserved": 0,
+        "format_clean": 1
+      }
+    }
+  ]
+}

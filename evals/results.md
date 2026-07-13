@@ -23,3 +23,7 @@
 - Gemma-4-12b writes perfect output but thinks for ~30 s per utterance — unusable interactively.
 
 Full per-sample detail: results.json (git-ignored; regenerate with `run_eval.py` + `judge_results.py`).
+
+## Addendum (2026-07-13): `localdictate-cleanup` preset
+
+Simon's pre-existing LM Studio preset `localdictate-cleanup` (an alias for **qwen3.5-4b**, ctx 4096) was compared against the chosen default on the identical samples+judge: **5.5/10 quality, 67 s median, 3/10 wrong-language outputs** — it exhausts ~4,300 reasoning tokens per utterance and truncates. qwen3-8b (9.9/10, 0.67 s) remains the single model to keep loaded; it also fits the Mac Mini. Rerun anytime with `python3 evals/compare_one.py <model-id>`.
