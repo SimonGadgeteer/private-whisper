@@ -1,0 +1,103 @@
+{
+  "": {
+    "dependencies": "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/LocalDictation.d",
+    "object": "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/LocalDictation.o",
+    "swift-dependencies": "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/master.swiftdeps"
+  },
+  "/Users/simon/Documents/claude/whisper_local/Sources/LocalDictation/AppDelegate.swift": {
+    "object": "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/AppDelegate.swift.o",
+    "swiftmodule": "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/AppDelegate~partial.swiftmodule",
+    "swift-dependencies": "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/AppDelegate.swiftdeps",
+    "diagnostics": "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/AppDelegate.dia"
+  },
+  "/Users/simon/Documents/claude/whisper_local/Sources/LocalDictation/AudioDevices.swift": {
+    "object": "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/AudioDevices.swift.o",
+    "swiftmodule": "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/AudioDevices~partial.swiftmodule",
+    "swift-dependencies": "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/AudioDevices.swiftdeps",
+    "diagnostics": "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/AudioDevices.dia"
+  },
+  "/Users/simon/Documents/claude/whisper_local/Sources/LocalDictation/AudioRecorder.swift": {
+    "object": "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/AudioRecorder.swift.o",
+    "swiftmodule": "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/AudioRecorder~partial.swiftmodule",
+    "swift-dependencies": "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/AudioRecorder.swiftdeps",
+    "diagnostics": "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/AudioRecorder.dia"
+  },
+  "/Users/simon/Documents/claude/whisper_local/Sources/LocalDictation/CleanupService.swift": {
+    "object": "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/CleanupService.swift.o",
+    "swiftmodule": "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/CleanupService~partial.swiftmodule",
+    "swift-dependencies": "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/CleanupService.swiftdeps",
+    "diagnostics": "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/CleanupService.dia"
+  },
+  "/Users/simon/Documents/claude/whisper_local/Sources/LocalDictation/Config.swift": {
+    "object": "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/Config.swift.o",
+    "swiftmodule": "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/Config~partial.swiftmodule",
+    "swift-dependencies": "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/Config.swiftdeps",
+    "diagnostics": "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/Config.dia"
+  },
+  "/Users/simon/Documents/claude/whisper_local/Sources/LocalDictation/HUDController.swift": {
+    "object": "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/HUDController.swift.o",
+    "swiftmodule": "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/HUDController~partial.swiftmodule",
+    "swift-dependencies": "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/HUDController.swiftdeps",
+    "diagnostics": "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/HUDController.dia"
+  },
+  "/Users/simon/Documents/claude/whisper_local/Sources/LocalDictation/HistoryLogger.swift": {
+    "object": "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/HistoryLogger.swift.o",
+    "swiftmodule": "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/HistoryLogger~partial.swiftmodule",
+    "swift-dependencies": "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/HistoryLogger.swiftdeps",
+    "diagnostics": "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/HistoryLogger.dia"
+  },
+  "/Users/simon/Documents/claude/whisper_local/Sources/LocalDictation/HotkeyMonitor.swift": {
+    "object": "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/HotkeyMonitor.swift.o",
+    "swiftmodule": "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/HotkeyMonitor~partial.swiftmodule",
+    "swift-dependencies": "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/HotkeyMonitor.swiftdeps",
+    "diagnostics": "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/HotkeyMonitor.dia"
+  },
+  "/Users/simon/Documents/claude/whisper_local/Sources/LocalDictation/Permissions.swift": {
+    "object": "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/Permissions.swift.o",
+    "swiftmodule": "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/Permissions~partial.swiftmodule",
+    "swift-dependencies": "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/Permissions.swiftdeps",
+    "diagnostics": "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/Permissions.dia"
+  },
+  "/Users/simon/Documents/claude/whisper_local/Sources/LocalDictation/PipelineController.swift": {
+    "object": "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/PipelineController.swift.o",
+    "swiftmodule": "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/PipelineController~partial.swiftmodule",
+    "swift-dependencies": "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/PipelineController.swiftdeps",
+    "diagnostics": "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/PipelineController.dia"
+  },
+  "/Users/simon/Documents/claude/whisper_local/Sources/LocalDictation/SettingsView.swift": {
+    "object": "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/SettingsView.swift.o",
+    "swiftmodule": "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/SettingsView~partial.swiftmodule",
+    "swift-dependencies": "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/SettingsView.swiftdeps",
+    "diagnostics": "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/SettingsView.dia"
+  },
+  "/Users/simon/Documents/claude/whisper_local/Sources/LocalDictation/StatusItemController.swift": {
+    "object": "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/StatusItemController.swift.o",
+    "swiftmodule": "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/StatusItemController~partial.swiftmodule",
+    "swift-dependencies": "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/StatusItemController.swiftdeps",
+    "diagnostics": "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/StatusItemController.dia"
+  },
+  "/Users/simon/Documents/claude/whisper_local/Sources/LocalDictation/TestMode.swift": {
+    "object": "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/TestMode.swift.o",
+    "swiftmodule": "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/TestMode~partial.swiftmodule",
+    "swift-dependencies": "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/TestMode.swiftdeps",
+    "diagnostics": "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/TestMode.dia"
+  },
+  "/Users/simon/Documents/claude/whisper_local/Sources/LocalDictation/TextInjector.swift": {
+    "object": "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/TextInjector.swift.o",
+    "swiftmodule": "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/TextInjector~partial.swiftmodule",
+    "swift-dependencies": "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/TextInjector.swiftdeps",
+    "diagnostics": "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/TextInjector.dia"
+  },
+  "/Users/simon/Documents/claude/whisper_local/Sources/LocalDictation/Transcriber.swift": {
+    "object": "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/Transcriber.swift.o",
+    "swiftmodule": "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/Transcriber~partial.swiftmodule",
+    "swift-dependencies": "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/Transcriber.swiftdeps",
+    "diagnostics": "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/Transcriber.dia"
+  },
+  "/Users/simon/Documents/claude/whisper_local/Sources/LocalDictation/main.swift": {
+    "object": "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/main.swift.o",
+    "swiftmodule": "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/main~partial.swiftmodule",
+    "swift-dependencies": "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/main.swiftdeps",
+    "diagnostics": "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/main.dia"
+  }
+}

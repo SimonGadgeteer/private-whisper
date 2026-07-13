@@ -1,0 +1,561 @@
+{
+  "builtTestProducts" : [
+
+  ],
+  "copyCommands" : {
+    "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/whisper.framework" : {
+      "inputs" : [
+        {
+          "kind" : "directory",
+          "name" : "/Users/simon/Documents/claude/whisper_local/Frameworks/whisper.xcframework/macos-arm64_x86_64/whisper.framework"
+        }
+      ],
+      "outputs" : [
+        {
+          "kind" : "directory",
+          "name" : "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/whisper.framework"
+        }
+      ]
+    }
+  },
+  "explicitTargetDependencyImportCheckingMode" : {
+    "none" : {
+
+    }
+  },
+  "generatedSourceTargetSet" : [
+
+  ],
+  "pluginDescriptions" : [
+
+  ],
+  "swiftCommands" : {
+    "C.LocalDictation-arm64-apple-macosx15.0-release.module" : {
+      "executable" : "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc",
+      "fileList" : "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/sources",
+      "importPath" : "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/Modules",
+      "inputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/simon/Documents/claude/whisper_local/Sources/LocalDictation/AppDelegate.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/simon/Documents/claude/whisper_local/Sources/LocalDictation/AudioDevices.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/simon/Documents/claude/whisper_local/Sources/LocalDictation/AudioRecorder.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/simon/Documents/claude/whisper_local/Sources/LocalDictation/CleanupService.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/simon/Documents/claude/whisper_local/Sources/LocalDictation/Config.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/simon/Documents/claude/whisper_local/Sources/LocalDictation/HUDController.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/simon/Documents/claude/whisper_local/Sources/LocalDictation/HistoryLogger.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/simon/Documents/claude/whisper_local/Sources/LocalDictation/HotkeyMonitor.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/simon/Documents/claude/whisper_local/Sources/LocalDictation/Permissions.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/simon/Documents/claude/whisper_local/Sources/LocalDictation/PipelineController.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/simon/Documents/claude/whisper_local/Sources/LocalDictation/SettingsView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/simon/Documents/claude/whisper_local/Sources/LocalDictation/StatusItemController.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/simon/Documents/claude/whisper_local/Sources/LocalDictation/TestMode.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/simon/Documents/claude/whisper_local/Sources/LocalDictation/TextInjector.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/simon/Documents/claude/whisper_local/Sources/LocalDictation/Transcriber.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/simon/Documents/claude/whisper_local/Sources/LocalDictation/main.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/swift-version--58304C5D6DBC2206.txt"
+        },
+        {
+          "kind" : "directory",
+          "name" : "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/whisper.framework"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/sources"
+        }
+      ],
+      "isLibrary" : false,
+      "moduleName" : "LocalDictation",
+      "moduleOutputPath" : "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/Modules/LocalDictation.swiftmodule",
+      "objects" : [
+        "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/AppDelegate.swift.o",
+        "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/AudioDevices.swift.o",
+        "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/AudioRecorder.swift.o",
+        "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/CleanupService.swift.o",
+        "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/Config.swift.o",
+        "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/HUDController.swift.o",
+        "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/HistoryLogger.swift.o",
+        "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/HotkeyMonitor.swift.o",
+        "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/Permissions.swift.o",
+        "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/PipelineController.swift.o",
+        "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/SettingsView.swift.o",
+        "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/StatusItemController.swift.o",
+        "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/TestMode.swift.o",
+        "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/TextInjector.swift.o",
+        "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/Transcriber.swift.o",
+        "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/main.swift.o"
+      ],
+      "otherArguments" : [
+        "-target",
+        "arm64-apple-macosx14.0",
+        "-whole-module-optimization",
+        "-num-threads",
+        "16",
+        "-serialize-diagnostics",
+        "-O",
+        "-j16",
+        "-DSWIFT_PACKAGE",
+        "-DSWIFT_MODULE_RESOURCE_BUNDLE_UNAVAILABLE",
+        "-I",
+        "/Users/simon/Documents/claude/whisper_local/Frameworks/whisper.xcframework/macos-arm64_x86_64",
+        "-Xcc",
+        "-I",
+        "-Xcc",
+        "/Users/simon/Documents/claude/whisper_local/Frameworks/whisper.xcframework/macos-arm64_x86_64",
+        "-module-cache-path",
+        "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/ModuleCache",
+        "-parseable-output",
+        "-Xfrontend",
+        "-entry-point-function-name",
+        "-Xfrontend",
+        "LocalDictation_main",
+        "-F",
+        "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release",
+        "-swift-version",
+        "5",
+        "-plugin-path",
+        "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing",
+        "-sdk",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk",
+        "-F",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+        "-F",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/PrivateFrameworks",
+        "-I",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+        "-L",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+        "-g",
+        "-Xcc",
+        "-isysroot",
+        "-Xcc",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk",
+        "-Xcc",
+        "-F",
+        "-Xcc",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+        "-Xcc",
+        "-F",
+        "-Xcc",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/PrivateFrameworks",
+        "-Xcc",
+        "-fPIC",
+        "-Xcc",
+        "-g",
+        "-package-name",
+        "whisper_local"
+      ],
+      "outputFileMapPath" : "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/output-file-map.json",
+      "outputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/AppDelegate.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/AudioDevices.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/AudioRecorder.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/CleanupService.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/Config.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/HUDController.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/HistoryLogger.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/HotkeyMonitor.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/Permissions.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/PipelineController.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/SettingsView.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/StatusItemController.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/TestMode.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/TextInjector.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/Transcriber.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/main.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/Modules/LocalDictation.swiftmodule"
+        }
+      ],
+      "prepareForIndexing" : false,
+      "sources" : [
+        "/Users/simon/Documents/claude/whisper_local/Sources/LocalDictation/AppDelegate.swift",
+        "/Users/simon/Documents/claude/whisper_local/Sources/LocalDictation/AudioDevices.swift",
+        "/Users/simon/Documents/claude/whisper_local/Sources/LocalDictation/AudioRecorder.swift",
+        "/Users/simon/Documents/claude/whisper_local/Sources/LocalDictation/CleanupService.swift",
+        "/Users/simon/Documents/claude/whisper_local/Sources/LocalDictation/Config.swift",
+        "/Users/simon/Documents/claude/whisper_local/Sources/LocalDictation/HUDController.swift",
+        "/Users/simon/Documents/claude/whisper_local/Sources/LocalDictation/HistoryLogger.swift",
+        "/Users/simon/Documents/claude/whisper_local/Sources/LocalDictation/HotkeyMonitor.swift",
+        "/Users/simon/Documents/claude/whisper_local/Sources/LocalDictation/Permissions.swift",
+        "/Users/simon/Documents/claude/whisper_local/Sources/LocalDictation/PipelineController.swift",
+        "/Users/simon/Documents/claude/whisper_local/Sources/LocalDictation/SettingsView.swift",
+        "/Users/simon/Documents/claude/whisper_local/Sources/LocalDictation/StatusItemController.swift",
+        "/Users/simon/Documents/claude/whisper_local/Sources/LocalDictation/TestMode.swift",
+        "/Users/simon/Documents/claude/whisper_local/Sources/LocalDictation/TextInjector.swift",
+        "/Users/simon/Documents/claude/whisper_local/Sources/LocalDictation/Transcriber.swift",
+        "/Users/simon/Documents/claude/whisper_local/Sources/LocalDictation/main.swift"
+      ],
+      "tempsPath" : "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build",
+      "wholeModuleOptimization" : true
+    }
+  },
+  "swiftFrontendCommands" : {
+
+  },
+  "swiftTargetScanArgs" : {
+    "LocalDictation" : [
+      "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc",
+      "-module-name",
+      "LocalDictation",
+      "-package-name",
+      "whisper_local",
+      "-c",
+      "/Users/simon/Documents/claude/whisper_local/Sources/LocalDictation/AppDelegate.swift",
+      "/Users/simon/Documents/claude/whisper_local/Sources/LocalDictation/AudioDevices.swift",
+      "/Users/simon/Documents/claude/whisper_local/Sources/LocalDictation/AudioRecorder.swift",
+      "/Users/simon/Documents/claude/whisper_local/Sources/LocalDictation/CleanupService.swift",
+      "/Users/simon/Documents/claude/whisper_local/Sources/LocalDictation/Config.swift",
+      "/Users/simon/Documents/claude/whisper_local/Sources/LocalDictation/HUDController.swift",
+      "/Users/simon/Documents/claude/whisper_local/Sources/LocalDictation/HistoryLogger.swift",
+      "/Users/simon/Documents/claude/whisper_local/Sources/LocalDictation/HotkeyMonitor.swift",
+      "/Users/simon/Documents/claude/whisper_local/Sources/LocalDictation/Permissions.swift",
+      "/Users/simon/Documents/claude/whisper_local/Sources/LocalDictation/PipelineController.swift",
+      "/Users/simon/Documents/claude/whisper_local/Sources/LocalDictation/SettingsView.swift",
+      "/Users/simon/Documents/claude/whisper_local/Sources/LocalDictation/StatusItemController.swift",
+      "/Users/simon/Documents/claude/whisper_local/Sources/LocalDictation/TestMode.swift",
+      "/Users/simon/Documents/claude/whisper_local/Sources/LocalDictation/TextInjector.swift",
+      "/Users/simon/Documents/claude/whisper_local/Sources/LocalDictation/Transcriber.swift",
+      "/Users/simon/Documents/claude/whisper_local/Sources/LocalDictation/main.swift",
+      "-I",
+      "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/Modules",
+      "-target",
+      "arm64-apple-macosx14.0",
+      "-whole-module-optimization",
+      "-num-threads",
+      "16",
+      "-serialize-diagnostics",
+      "-O",
+      "-j16",
+      "-DSWIFT_PACKAGE",
+      "-DSWIFT_MODULE_RESOURCE_BUNDLE_UNAVAILABLE",
+      "-I",
+      "/Users/simon/Documents/claude/whisper_local/Frameworks/whisper.xcframework/macos-arm64_x86_64",
+      "-Xcc",
+      "-I",
+      "-Xcc",
+      "/Users/simon/Documents/claude/whisper_local/Frameworks/whisper.xcframework/macos-arm64_x86_64",
+      "-module-cache-path",
+      "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/ModuleCache",
+      "-parseable-output",
+      "-Xfrontend",
+      "-entry-point-function-name",
+      "-Xfrontend",
+      "LocalDictation_main",
+      "-F",
+      "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release",
+      "-swift-version",
+      "5",
+      "-plugin-path",
+      "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing",
+      "-sdk",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk",
+      "-F",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+      "-F",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/PrivateFrameworks",
+      "-I",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+      "-L",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+      "-g",
+      "-Xcc",
+      "-isysroot",
+      "-Xcc",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk",
+      "-Xcc",
+      "-F",
+      "-Xcc",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+      "-Xcc",
+      "-F",
+      "-Xcc",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/PrivateFrameworks",
+      "-Xcc",
+      "-fPIC",
+      "-Xcc",
+      "-g",
+      "-package-name",
+      "whisper_local",
+      "-driver-use-frontend-path",
+      "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc"
+    ]
+  },
+  "targetDependencyMap" : {
+    "LocalDictation" : [
+      "whisper"
+    ]
+  },
+  "testDiscoveryCommands" : {
+
+  },
+  "testEntryPointCommands" : {
+
+  },
+  "traitConfiguration" : {
+    "default" : {
+
+    }
+  },
+  "writeCommands" : {
+    "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/sources" : {
+      "alwaysOutOfDate" : false,
+      "inputs" : [
+        {
+          "kind" : "virtual",
+          "name" : "<sources-file-list>"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/simon/Documents/claude/whisper_local/Sources/LocalDictation/AppDelegate.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/simon/Documents/claude/whisper_local/Sources/LocalDictation/AudioDevices.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/simon/Documents/claude/whisper_local/Sources/LocalDictation/AudioRecorder.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/simon/Documents/claude/whisper_local/Sources/LocalDictation/CleanupService.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/simon/Documents/claude/whisper_local/Sources/LocalDictation/Config.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/simon/Documents/claude/whisper_local/Sources/LocalDictation/HUDController.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/simon/Documents/claude/whisper_local/Sources/LocalDictation/HistoryLogger.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/simon/Documents/claude/whisper_local/Sources/LocalDictation/HotkeyMonitor.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/simon/Documents/claude/whisper_local/Sources/LocalDictation/Permissions.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/simon/Documents/claude/whisper_local/Sources/LocalDictation/PipelineController.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/simon/Documents/claude/whisper_local/Sources/LocalDictation/SettingsView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/simon/Documents/claude/whisper_local/Sources/LocalDictation/StatusItemController.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/simon/Documents/claude/whisper_local/Sources/LocalDictation/TestMode.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/simon/Documents/claude/whisper_local/Sources/LocalDictation/TextInjector.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/simon/Documents/claude/whisper_local/Sources/LocalDictation/Transcriber.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/simon/Documents/claude/whisper_local/Sources/LocalDictation/main.swift"
+        }
+      ],
+      "outputFilePath" : "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/sources"
+    },
+    "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.product/Objects.LinkFileList" : {
+      "alwaysOutOfDate" : false,
+      "inputs" : [
+        {
+          "kind" : "virtual",
+          "name" : "<link-file-list>"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/AppDelegate.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/AudioDevices.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/AudioRecorder.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/CleanupService.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/Config.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/HUDController.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/HistoryLogger.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/HotkeyMonitor.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/Permissions.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/PipelineController.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/SettingsView.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/StatusItemController.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/TestMode.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/TextInjector.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/Transcriber.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.build/main.swift.o"
+        }
+      ],
+      "outputFilePath" : "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/LocalDictation.product/Objects.LinkFileList"
+    },
+    "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/swift-version--58304C5D6DBC2206.txt" : {
+      "alwaysOutOfDate" : true,
+      "inputs" : [
+        {
+          "kind" : "virtual",
+          "name" : "<swift-get-version>"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc"
+        }
+      ],
+      "outputFilePath" : "/Users/simon/Documents/claude/whisper_local/.build/arm64-apple-macosx/release/swift-version--58304C5D6DBC2206.txt"
+    }
+  }
+}
