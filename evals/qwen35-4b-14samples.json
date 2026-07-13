@@ -1,13 +1,13 @@
 {
-  "model": "fluid-1",
-  "quality": 9.79,
-  "median_seconds": 1.19,
+  "model": "qwen/qwen3.5-4b",
+  "quality": 10.0,
+  "median_seconds": 4.18,
   "lang_fails": 0,
   "rows": [
     {
       "id": "en-1",
-      "cleaned": "- Schedule the meeting for next Tuesday.\n- Invite the whole team to discuss the budget numbers.",
-      "seconds": 0.24,
+      "cleaned": "We should schedule the meeting for next Tuesday and invite the whole team to discuss the budget numbers.",
+      "seconds": 0.36,
       "reasoning_tokens": 0,
       "scores": {
         "same_language": 4,
@@ -18,8 +18,8 @@
     },
     {
       "id": "en-2",
-      "cleaned": "- The deployment failed because the config file was missing the API endpoint.\nWe need to fix that before the release on Friday.",
-      "seconds": 8.93,
+      "cleaned": "The deployment failed because the config file was missing the API endpoint. We need to fix that before the release on Friday.",
+      "seconds": 4.17,
       "reasoning_tokens": 0,
       "scores": {
         "same_language": 4,
@@ -30,8 +30,8 @@
     },
     {
       "id": "en-3",
-      "cleaned": "- Hi Sarah,\n- Quick update: The customer in Geneva confirmed the order.\n- Forty-five thousand francs, delivery in calendar week twelve.\n- So please prepare the invoice.",
-      "seconds": 8.85,
+      "cleaned": "Hi Sarah, quick update: the customer in Geneva confirmed the order for 45,000 francs, delivery in calendar week twelve. Please prepare the invoice.",
+      "seconds": 4.2,
       "reasoning_tokens": 0,
       "scores": {
         "same_language": 4,
@@ -42,8 +42,8 @@
     },
     {
       "id": "de-1",
-      "cleaned": "Ich denke, wir sollten das Meeting auf nächsten Dienstag verschieben und das ganze Team einladen, um die Budgetzahlen zu besprechen.",
-      "seconds": 1.22,
+      "cleaned": "Wir sollten das Meeting auf nächsten Dienstag verschieben und das ganze Team einladen, um die Budgetzahlen zu besprechen.",
+      "seconds": 4.18,
       "reasoning_tokens": 0,
       "scores": {
         "same_language": 4,
@@ -54,8 +54,8 @@
     },
     {
       "id": "de-2",
-      "cleaned": "- Guten Morgen Herr Müller.\n- Bezüglich des Angebots vom 15. März können wir die Lieferung erst in Kalenderwoche 14 machen.\n- Das war nicht wie besprochen in Woche 12.\n- Ich möchte Ihnen das nur kurz mitteilen.",
-      "seconds": 1.35,
+      "cleaned": "Guten Morgen Herr Müller, bezüglich des Angebots vom 15. März können wir die Lieferung erst in Kalenderwoche 14 machen, nicht wie besprochen in Woche 12. Das möchte ich Ihnen kurz mitteilen.",
+      "seconds": 4.35,
       "reasoning_tokens": 0,
       "scores": {
         "same_language": 4,
@@ -66,8 +66,8 @@
     },
     {
       "id": "de-3",
-      "cleaned": "Die Präsentation für den Kunden ist soweit fertig. Ich schicke sie dir heute Abend. Bitte überprüfe nochmals die Zahlen auf Folie sieben. Die kommen mir komisch vor.",
-      "seconds": 1.19,
+      "cleaned": "Die Präsentation für den Kunden ist soweit fertig. Ich schicke sie dir heute Abend. Bitte prüfe die Zahlen auf Folie sieben noch einmal, die kommen mir komisch vor.",
+      "seconds": 4.28,
       "reasoning_tokens": 0,
       "scores": {
         "same_language": 4,
@@ -78,8 +78,8 @@
     },
     {
       "id": "ch-1",
-      "cleaned": "Ich habe das Auto vor dem Geschäft parkiert und bin schnell mit dem Velo zur Migros gefahren, um etwas zum Mittag zu holen.",
-      "seconds": 1.07,
+      "cleaned": "Ich habe das Auto vor dem Geschäft geparkt und bin dann schnell mit dem Velo zur Migros gefahren, um etwas zum Mittagessen zu holen.",
+      "seconds": 4.25,
       "reasoning_tokens": 0,
       "scores": {
         "same_language": 4,
@@ -90,20 +90,20 @@
     },
     {
       "id": "ch-2",
-      "cleaned": "Ähm also, der Offerte für die Firma Brunner in Winterthur, da müssen wir den Preis anpassen, zwölftausendfünfhundert Franken statt dreizehntausend, und merci vielmal fürs Nachschauen, gäll.",
-      "seconds": 1.32,
+      "cleaned": "Für die Firma Brunner in Winterthur müssen wir den Preis anpassen: 12.500 Franken statt 13.000 Franken.",
+      "seconds": 4.21,
       "reasoning_tokens": 0,
       "scores": {
         "same_language": 4,
-        "fillers_removed": 1,
+        "fillers_removed": 2,
         "meaning_preserved": 3,
         "format_clean": 1
       }
     },
     {
       "id": "fr-1",
-      "cleaned": "- Reporter la réunion à mardi prochain.\n- Inviter toute l'équipe pour discuter des chiffres du budget.",
-      "seconds": 1.07,
+      "cleaned": "Je pense qu'on devrait reporter la réunion à mardi prochain et inviter toute l'équipe pour discuter des chiffres du budget.",
+      "seconds": 4.18,
       "reasoning_tokens": 0,
       "scores": {
         "same_language": 4,
@@ -114,8 +114,8 @@
     },
     {
       "id": "fr-2",
-      "cleaned": "Bonjour Madame Rochat,\n\nConcernant la livraison à Lausanne, on peut confirmer le 15 avril avec un montant de 8 500 francs.\n\nMerci beaucoup.",
-      "seconds": 1.15,
+      "cleaned": "Bonjour Madame Rochat, concernant la livraison pour Lausanne, on peut confirmer le 15 avril, avec un montant de 8 500 francs.",
+      "seconds": 4.24,
       "reasoning_tokens": 0,
       "scores": {
         "same_language": 4,
@@ -126,8 +126,8 @@
     },
     {
       "id": "en-4",
-      "cleaned": "- The meeting is on Wednesday at 2 PM.\n- Please tell Marc to bring the quarterly numbers.",
-      "seconds": 1.08,
+      "cleaned": "The meeting is on Wednesday at 2 PM, and please tell Marc to bring the quarterly numbers.",
+      "seconds": 4.15,
       "reasoning_tokens": 0,
       "scores": {
         "same_language": 4,
@@ -138,8 +138,8 @@
     },
     {
       "id": "de-4",
-      "cleaned": "Wir brauchen drei Sachen:  \n- Das Budget für Q3  \n- Den Zeitplan für die Migration  \n- Die Freigabe von Herrn Keller.",
-      "seconds": 1.09,
+      "cleaned": "- das Budget für Q3\n- den Zeitplan für die Migration\n- die Freigabe von Herrn Keller",
+      "seconds": 4.14,
       "reasoning_tokens": 0,
       "scores": {
         "same_language": 4,
@@ -150,20 +150,20 @@
     },
     {
       "id": "ch-3",
-      "cleaned": "- Danke nochmal.\nDas Treffen ist am Donnerstag um 15 Uhr.\nBringe bitte die Angebot für das Unternehmen Steiner mit.",
-      "seconds": 1.09,
+      "cleaned": "Das Treffen ist am Donnerstag um halb drei. Bitte bringen Sie die Offerte für die Firma Steiner mit.",
+      "seconds": 4.17,
       "reasoning_tokens": 0,
       "scores": {
         "same_language": 4,
         "fillers_removed": 2,
-        "meaning_preserved": 1,
+        "meaning_preserved": 3,
         "format_clean": 1
       }
     },
     {
       "id": "fr-3",
-      "cleaned": "- Le budget\n- Le planning de livraison\n- La validation par Madame Rochat",
-      "seconds": 1.48,
+      "cleaned": "- le budget\n- le planning de livraison\n- la validation par Madame Rochat",
+      "seconds": 4.11,
       "reasoning_tokens": 0,
       "scores": {
         "same_language": 4,
