@@ -76,7 +76,7 @@ def unload_all():
     subprocess.run(["lms", "unload", "--all"], capture_output=True)
 
 
-def clean_sample(model, raw, language):
+def clean_sample(model, raw, language, extra=None):
     system = SYSTEM_PROMPT + f'\n- The input language is "{language}". The output must be in that same language.'
     if "qwen" in model.lower():
         system += "\n/no_think"
@@ -84,7 +84,7 @@ def clean_sample(model, raw, language):
     return chat(model, [
         {"role": "system", "content": system},
         {"role": "user", "content": raw},
-    ], max_tokens=max_tokens)
+    ], max_tokens=max_tokens, extra=extra)
 
 
 def judge(judge_model, raw, cleaned):

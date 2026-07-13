@@ -33,7 +33,7 @@ The PRD listed **distil-large-v3** as the latency fallback, but distil-whisper i
 | qwen3.5-4b | yes | 5.3 | 71.6 | 2 |
 | qwen3.5-9b | yes | 4.6 | 98.4 | 4 |
 
-**Default: `qwen/qwen3-8b`** — 9.9/10 at 0.67 s median, fits the Mini. `ministral-3-14b-reasoning` is the quality-max option (10/10 @ 1.84 s) for the 128 GB machine but exceeds the Mini budget; `ministral-3-3b` is fastest but restructures text and adds markdown. Qwen 3.5 models are disqualified: always-thinking (70–100 s) and the only candidates that translated samples into the wrong language. Full analysis: evals/results.md.
+**Default: `qwen/qwen3.5-4b` with `reasoning_effort: "none"`** (updated same day — a cross-check against a second AI's benchmark revealed the request parameter that fully disables Qwen 3.5 thinking, which this eval had missed; rerun fairly the 4B scores 10.0/10 at 0.46 s in 3.06 GB, beating qwen3-8b on all axes). Previous pick `qwen/qwen3-8b` — 9.9/10 at 0.67 s median — remains the runner-up. `ministral-3-14b-reasoning` is the quality-max option (10/10 @ 1.84 s) for the 128 GB machine but exceeds the Mini budget; `ministral-3-3b` is fastest but restructures text and adds markdown. Qwen 3.5 models are disqualified: always-thinking (70–100 s) and the only candidates that translated samples into the wrong language. Full analysis: evals/results.md.
 
 ## 5. Re-trigger while processing: reject (PRD §7.7)
 

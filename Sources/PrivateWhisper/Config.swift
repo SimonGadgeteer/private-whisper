@@ -34,7 +34,7 @@ struct AppConfig: Codable, Equatable {
     /// "large-v3" or "large-v3-turbo" — resolved to ggml-<name>.bin in the models dir
     var whisperModel: String = "large-v3-turbo"
     var lmStudioURL: String = "http://localhost:1234/v1"
-    var cleanupModel: String = "qwen/qwen3-8b"
+    var cleanupModel: String = "qwen/qwen3.5-4b"
     var cleanupEnabled: Bool = true
     var cleanupTimeoutSeconds: Double = 15
     var historyLoggingEnabled: Bool = false

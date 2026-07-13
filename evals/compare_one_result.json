@@ -1,38 +1,38 @@
 {
-  "model": "localdictate-cleanup",
-  "quality": 5.5,
-  "median_seconds": 67.16,
-  "lang_fails": 3,
+  "model": "qwen/qwen3.5-4b",
+  "quality": 10.0,
+  "median_seconds": 4.31,
+  "lang_fails": 0,
   "rows": [
     {
       "id": "en-1",
-      "cleaned": "",
-      "seconds": 35.77,
-      "reasoning_tokens": 4351,
+      "cleaned": "I think we should schedule the meeting for next Tuesday and invite the whole team to discuss the budget numbers.",
+      "seconds": 0.33,
+      "reasoning_tokens": 0,
       "scores": {
-        "same_language": 0,
-        "fillers_removed": 0,
-        "meaning_preserved": 0,
+        "same_language": 4,
+        "fillers_removed": 2,
+        "meaning_preserved": 3,
         "format_clean": 1
       }
     },
     {
       "id": "en-2",
-      "cleaned": "",
-      "seconds": 46.47,
-      "reasoning_tokens": 4351,
+      "cleaned": "The deployment failed because the config file was missing the API endpoint. We need to fix that before the release on Friday.",
+      "seconds": 4.31,
+      "reasoning_tokens": 0,
       "scores": {
-        "same_language": 0,
+        "same_language": 4,
         "fillers_removed": 2,
-        "meaning_preserved": 0,
+        "meaning_preserved": 3,
         "format_clean": 1
       }
     },
     {
       "id": "en-3",
-      "cleaned": "Hi Sarah, quick update, the customer in Geneva confirmed the order, forty five thousand francs, delivery in calendar week twelve, so please, prepare the invoice.",
-      "seconds": 67.62,
-      "reasoning_tokens": 3581,
+      "cleaned": "Hi Sarah, quick update: the customer in Geneva confirmed the order for 45,000 francs, delivery in calendar week 12. Please prepare the invoice.",
+      "seconds": 4.31,
+      "reasoning_tokens": 0,
       "scores": {
         "same_language": 4,
         "fillers_removed": 2,
@@ -42,85 +42,85 @@
     },
     {
       "id": "de-1",
-      "cleaned": "",
-      "seconds": 97.62,
-      "reasoning_tokens": 4351,
+      "cleaned": "Ich denke, wir sollten das Meeting auf nächsten Dienstag verschieben und das ganze Team einladen, um die Budgetzahlen zu besprechen.",
+      "seconds": 4.19,
+      "reasoning_tokens": 0,
       "scores": {
         "same_language": 4,
-        "fillers_removed": 0,
-        "meaning_preserved": 0,
+        "fillers_removed": 2,
+        "meaning_preserved": 3,
         "format_clean": 1
       }
     },
     {
       "id": "de-2",
-      "cleaned": "",
-      "seconds": 74.43,
-      "reasoning_tokens": 4351,
+      "cleaned": "Guten Morgen Herr Müller, bezüglich des Angebots vom 15. März können wir die Lieferung erst in Kalenderwoche 14 machen, nicht wie besprochen in Woche 12. Das möchte ich Ihnen kurz mitteilen.",
+      "seconds": 4.39,
+      "reasoning_tokens": 0,
       "scores": {
         "same_language": 4,
         "fillers_removed": 2,
-        "meaning_preserved": 0,
+        "meaning_preserved": 3,
         "format_clean": 1
       }
     },
     {
       "id": "de-3",
-      "cleaned": "",
-      "seconds": 80.43,
-      "reasoning_tokens": 4351,
+      "cleaned": "Die Präsentation für den Kunden ist soweit fertig. Ich schicke sie dir heute Abend. Bitte prüfe die Zahlen auf Folie sieben noch einmal, die kommen mir komisch vor.",
+      "seconds": 4.25,
+      "reasoning_tokens": 0,
       "scores": {
         "same_language": 4,
         "fillers_removed": 2,
-        "meaning_preserved": 0,
+        "meaning_preserved": 3,
         "format_clean": 1
       }
     },
     {
       "id": "ch-1",
-      "cleaned": "",
-      "seconds": 66.37,
-      "reasoning_tokens": 4351,
+      "cleaned": "Gäll, ich habe das Auto vor dem Geschäft geparkt und bin dann schnell mit dem Velo zur Migros gefahren, um etwas zum Mittagessen zu holen.",
+      "seconds": 4.26,
+      "reasoning_tokens": 0,
       "scores": {
         "same_language": 4,
         "fillers_removed": 2,
-        "meaning_preserved": 0,
+        "meaning_preserved": 3,
         "format_clean": 1
       }
     },
     {
       "id": "ch-2",
-      "cleaned": "",
-      "seconds": 67.16,
-      "reasoning_tokens": 4351,
+      "cleaned": "Die Offerte für die Firma Brunner in Winterthur muss den Preis anpassen: 12.500 Franken statt 13.000. Vielen Dank für das Nachschauen, gäll.",
+      "seconds": 4.37,
+      "reasoning_tokens": 0,
       "scores": {
         "same_language": 4,
         "fillers_removed": 2,
-        "meaning_preserved": 0,
+        "meaning_preserved": 3,
         "format_clean": 1
       }
     },
     {
       "id": "fr-1",
-      "cleaned": "",
-      "seconds": 66.98,
-      "reasoning_tokens": 4351,
+      "cleaned": "Je pense qu'on devrait reporter la réunion à mardi prochain et inviter toute l'équipe pour discuter des chiffres du budget.",
+      "seconds": 4.3,
+      "reasoning_tokens": 0,
       "scores": {
-        "same_language": 0,
-        "fillers_removed": 0,
-        "meaning_preserved": 0,
+        "same_language": 4,
+        "fillers_removed": 2,
+        "meaning_preserved": 3,
         "format_clean": 1
       }
     },
     {
       "id": "fr-2",
-      "cleaned": "",
-      "seconds": 66.9,
-      "reasoning_tokens": 4351,
+      "cleaned": "Madame Rochat, concernant la livraison pour Lausanne, on peut confirmer le 15 avril, avec un montant de huit mille cinq cents francs. Merci beaucoup.",
+      "seconds": 4.41,
+      "reasoning_tokens": 0,
       "scores": {
         "same_language": 4,
         "fillers_removed": 2,
-        "meaning_preserved": 0,
+        "meaning_preserved": 3,
         "format_clean": 1
       }
     }

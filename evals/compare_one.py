@@ -16,15 +16,17 @@ HERE = Path(__file__).parent
 
 
 def main():
-    model = sys.argv[1]
-    baseline = sys.argv[2] if len(sys.argv) > 2 else "qwen/qwen3-8b"
+    args = [a for a in sys.argv[1:] if a != "--reasoning-none"]
+    extra = {"reasoning_effort": "none"} if "--reasoning-none" in sys.argv else None
+    model = args[0]
+    baseline = args[1] if len(args) > 1 else "qwen/qwen3-8b"
 
     samples = json.loads((HERE / "samples.json").read_text())
 
     print(f"=== running {model} ===", flush=True)
     # Warm-up (JIT load, not measured)
     try:
-        _, load_s, warm_rtoks = clean_sample(model, "Um, hello there.", "en")
+        _, load_s, warm_rtoks = clean_sample(model, "Um, hello there.", "en", extra=extra)
         print(f"  load/warm-up: {load_s:.1f}s (reasoning tokens: {warm_rtoks})", flush=True)
     except Exception as exc:
         print(f"  FAILED to load: {exc}")
@@ -33,7 +35,7 @@ def main():
     rows = []
     for sample in samples:
         try:
-            cleaned, elapsed, rtoks = clean_sample(model, sample["raw"], sample["language"])
+            cleaned, elapsed, rtoks = clean_sample(model, sample["raw"], sample["language"], extra=extra)
         except Exception as exc:
             print(f"  {sample['id']}: ERROR {exc}", flush=True)
             rows.append({"id": sample["id"], "error": str(exc)})

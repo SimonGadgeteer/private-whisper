@@ -27,3 +27,14 @@ Full per-sample detail: results.json (git-ignored; regenerate with `run_eval.py`
 ## Addendum (2026-07-13): `localdictate-cleanup` preset
 
 Simon's pre-existing LM Studio preset `localdictate-cleanup` (an alias for **qwen3.5-4b**, ctx 4096) was compared against the chosen default on the identical samples+judge: **5.5/10 quality, 67 s median, 3/10 wrong-language outputs** — it exhausts ~4,300 reasoning tokens per utterance and truncates. qwen3-8b (9.9/10, 0.67 s) remains the single model to keep loaded; it also fits the Mac Mini. Rerun anytime with `python3 evals/compare_one.py <model-id>`.
+
+## Correction (2026-07-13, later): Qwen 3.5 CAN stop thinking — default switched to qwen3.5-4b
+
+A second assessment (Simon's other AI assistant, 22 correction-heavy cases) showed qwen3.5-4b winning at 0.34 s — impossible in thinking mode. Investigation found the knob this eval missed: **`"reasoning_effort": "none"`** in the request body fully disables Qwen 3.5 thinking (LM Studio; `/no_think` and `chat_template_kwargs.enable_thinking` do NOT work). Rerun fairly:
+
+| | quality /10 (this eval) | other AI (22 cases) | median s | RAM |
+|---|---|---|---|---|
+| qwen3.5-4b + reasoning_effort none | **10.0** | **95.3%** | **0.46** | **3.06 GB** |
+| qwen3-8b + /no_think | 9.9 | 92.1% | 0.67 | 4.62 GB |
+
+Both benchmarks agree → **default changed to `qwen/qwen3.5-4b`**; the app now always sends `reasoning_effort: "none"` (safely ignored by non-reasoning models). Earlier "Qwen 3.5 disqualified" conclusions and the `localdictate-cleanup` comparison reflect thinking-mode runs and are superseded for latency/quality (the preset's 4096-token context cap remains a real defect — use the raw model).

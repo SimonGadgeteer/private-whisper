@@ -61,6 +61,9 @@ struct CleanupService {
             "temperature": 0.2,
             "max_tokens": maxTokens,
             "stream": false,
+            // Disables thinking on models that support it (e.g. Qwen 3.5 —
+            // 0.46s instead of 67s); safely ignored by non-reasoning models.
+            "reasoning_effort": "none",
         ]
 
         var request = URLRequest(url: url)
