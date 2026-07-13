@@ -56,7 +56,8 @@ enum TestMode {
                         let cleaned = try await cleanup.cleanup(
                             transcript: result.text, language: result.language,
                             glossary: config.dictionary)
-                        output["cleaned"] = cleaned
+                        output["cleaned"] = CorrectionLearner.enforceDictionary(
+                            cleaned, dictionary: config.dictionary)
                         output["cleanup_seconds"] = Date().timeIntervalSince(cStart)
                         output["cleanup_model"] = config.cleanupModel
                     } catch {

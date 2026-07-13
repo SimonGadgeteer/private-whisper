@@ -18,7 +18,11 @@ final class HUDController {
     /// Correction-learning suggestions with one-click Add.
     func showSuggestions(_ terms: [String], onAdd: @escaping (String) -> Void) {
         show(width: 300, height: CGFloat(56 + terms.count * 34), autoDismiss: 14) {
-            SuggestionHUDView(terms: terms, onAdd: onAdd)
+            SuggestionHUDView(terms: terms, onAdd: onAdd) { [weak self] in
+                // Everything added — no reason to linger.
+                Task { try? await Task.sleep(nanoseconds: 900_000_000)
+                       self?.dismiss() }
+            }
         }
     }
 
@@ -81,6 +85,7 @@ final class HUDController {
 private struct SuggestionHUDView: View {
     let terms: [String]
     let onAdd: (String) -> Void
+    let onAllAdded: () -> Void
     @State private var added: Set<String> = []
 
     var body: some View {
@@ -95,6 +100,7 @@ private struct SuggestionHUDView: View {
                     Button(added.contains(term) ? "Added ✓" : "Add") {
                         onAdd(term)
                         added.insert(term)
+                        if added.count == terms.count { onAllAdded() }
                     }
                     .disabled(added.contains(term))
                 }

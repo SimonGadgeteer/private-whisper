@@ -32,29 +32,33 @@ final class CorrectionLearner {
         }
         generation += 1
         let gen = generation
+        var alreadySuggested = Set<String>()
 
         Task { [weak self] in
-            for delaySeconds in [10.0, 25.0] {
+            // Keep watching across several checkpoints — the user may fix one
+            // word at 8s and another at 30s. Each new term is suggested once.
+            for delaySeconds in [8.0, 12.0, 15.0, 25.0] { // cumulative: 8s, 20s, 35s, 60s
                 try? await Task.sleep(nanoseconds: UInt64(delaySeconds * 1_000_000_000))
                 guard let self, gen == self.generation else { return }
-                if self.check(injected: text, element: element) { return }
+                self.check(injected: text, element: element, alreadySuggested: &alreadySuggested)
             }
         }
     }
 
-    /// Returns true when suggestions were produced (stops further checks).
-    private func check(injected text: String, element: AXUIElement) -> Bool {
+    private func check(
+        injected text: String, element: AXUIElement, alreadySuggested: inout Set<String>
+    ) {
         guard let value = Self.stringValue(of: element) else {
             dlog("learner: field value unreadable (app likely not AX-friendly)")
-            return false
+            return
         }
         let existing = Set(configStore.config.dictionary.map { $0.lowercased() })
         let candidates = Self.corrections(original: text, edited: value)
             .filter { !existing.contains($0.lowercased()) }
-        guard !candidates.isEmpty else { return false }
+            .filter { alreadySuggested.insert($0.lowercased()).inserted }
+        guard !candidates.isEmpty else { return }
         dlog("learner: suggesting \(candidates)")
         onSuggestions?(candidates)
-        return true
     }
 
     // MARK: - AX plumbing
@@ -144,6 +148,48 @@ final class CorrectionLearner {
             }
         }
         return pairs
+    }
+
+    /// Deterministic glossary enforcement: replaces output words that are
+    /// near-misses of a dictionary term (similarity ≥ 0.8, length ≥ 4) with the
+    /// exact dictionary spelling. Runs after cleanup so a term ALWAYS wins even
+    /// when whisper and the LLM both fumble it.
+    nonisolated static func enforceDictionary(_ text: String, dictionary: [String]) -> String {
+        guard !dictionary.isEmpty else { return text }
+        let terms = dictionary.filter { $0.count >= 4 }
+        guard !terms.isEmpty else { return text }
+
+        var result = ""
+        var word = ""
+        func flush() {
+            if !word.isEmpty {
+                result += replacement(for: word, terms: terms)
+                word = ""
+            }
+        }
+        for ch in text {
+            if ch.isLetter || ch == "-" || ch == "'" || ch == "’" {
+                word.append(ch)
+            } else {
+                flush()
+                result.append(ch)
+            }
+        }
+        flush()
+        return result
+    }
+
+    nonisolated private static func replacement(for word: String, terms: [String]) -> String {
+        guard word.count >= 4 else { return word }
+        let lower = word.lowercased()
+        for term in terms {
+            let termLower = term.lowercased()
+            if lower == termLower { return term } // case/diacritic-exact enforcement
+            let distance = levenshtein(lower, termLower)
+            let similarity = 1.0 - Double(distance) / Double(max(word.count, term.count))
+            if similarity >= 0.8 { return term }
+        }
+        return word
     }
 
     nonisolated private static func levenshtein(_ a: String, _ b: String) -> Int {
