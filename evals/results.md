@@ -38,3 +38,7 @@ A second assessment (Simon's other AI assistant, 22 correction-heavy cases) show
 | qwen3-8b + /no_think | 9.9 | 92.1% | 0.67 | 4.62 GB |
 
 Both benchmarks agree → **default changed to `qwen/qwen3.5-4b`**; the app now always sends `reasoning_effort: "none"` (safely ignored by non-reasoning models). Earlier "Qwen 3.5 disqualified" conclusions and the `localdictate-cleanup` comparison reflect thinking-mode runs and are superseded for latency/quality (the preset's 4096-token context cap remains a real defect — use the raw model).
+
+## Addendum 2 (2026-07-13): backtracking + list-formatting prompt rules
+
+Four hard samples added (EN/CH backtracking, DE/FR enumerations). qwen3.5-4b with the extended prompt: **10.0/10 on all 14 samples**, 0 language failures — self-corrections keep only the corrected value, enumerations become "- " lists, Helvetisms survive. No regression on the original 10.
