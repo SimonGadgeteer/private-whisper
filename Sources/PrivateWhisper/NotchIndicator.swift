@@ -58,7 +58,16 @@ final class NotchIndicatorController {
 
     // MARK: - Panel
 
-    private static let pillSize = NSSize(width: 210, height: 34)
+    private static let pillHeight: CGFloat = 34
+
+    /// Match the physical notch width (plus a hair so the rounded corners
+    /// read as part of it); sensible fixed width on non-notch displays.
+    private static func pillWidth(for screen: NSScreen) -> CGFloat {
+        if let left = screen.auxiliaryTopLeftArea, let right = screen.auxiliaryTopRightArea {
+            return screen.frame.width - left.width - right.width + 8
+        }
+        return 160
+    }
 
     private func show() {
         if panel == nil { panel = makePanel() }
@@ -79,7 +88,7 @@ final class NotchIndicatorController {
     }
 
     private func makePanel() -> NSPanel {
-        let size = Self.pillSize
+        let size = NSSize(width: 160, height: Self.pillHeight)
         let hosting = NSHostingView(rootView: NotchPillView(model: model))
         hosting.frame = NSRect(origin: .zero, size: size)
 
@@ -110,26 +119,38 @@ final class NotchIndicatorController {
         let topInset = screen.safeAreaInsets.top > 0
             ? screen.safeAreaInsets.top
             : (screen.frame.maxY - screen.visibleFrame.maxY)
-        let size = Self.pillSize
-        panel.setFrameOrigin(NSPoint(
+        let size = NSSize(width: Self.pillWidth(for: screen), height: Self.pillHeight)
+        model.configure(width: size.width)
+        panel.setFrame(NSRect(
             x: screen.frame.midX - size.width / 2,
-            y: screen.frame.maxY - topInset - size.height))
+            y: screen.frame.maxY - topInset - size.height,
+            width: size.width, height: size.height), display: true)
+        panel.contentView?.frame = NSRect(origin: .zero, size: size)
     }
 }
 
 @MainActor
 final class NotchIndicatorModel: ObservableObject {
     @Published var mode: NotchIndicatorController.Mode = .recording
-    @Published var levels: [Float] = NotchIndicatorModel.emptyLevels
+    @Published var levels: [Float] = []
+    @Published var pillWidth: CGFloat = 160
 
-    static let barCount = 22
-    private static var emptyLevels: [Float] { Array(repeating: 0, count: barCount) }
+    /// Adapts bar count to the pill width (6 pt per bar, ~56 pt for the red
+    /// dot, spacing and padding).
+    func configure(width: CGFloat) {
+        pillWidth = width
+        let bars = max(8, Int((width - 56) / 6))
+        if levels.count != bars {
+            levels = Array(repeating: 0, count: bars)
+        }
+    }
 
     func resetLevels() {
-        levels = Self.emptyLevels
+        levels = Array(repeating: 0, count: max(levels.count, 8))
     }
 
     func push(level: Float) {
+        guard !levels.isEmpty else { return }
         levels.removeFirst()
         levels.append(level)
     }
@@ -167,7 +188,7 @@ private struct NotchPillView: View {
                     .foregroundStyle(.white.opacity(0.85))
             }
         }
-        .frame(width: 210, height: 34)
+        .frame(width: model.pillWidth, height: 34)
         .background(
             UnevenRoundedRectangle(
                 topLeadingRadius: 0, bottomLeadingRadius: 14,
