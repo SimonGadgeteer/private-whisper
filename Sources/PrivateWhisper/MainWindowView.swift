@@ -131,9 +131,11 @@ private struct BarRow: View {
                 .font(.caption)
                 .frame(width: 80, alignment: .leading)
             GeometryReader { geo in
-                Capsule()
-                    .fill(.tint.opacity(0.75))
-                    .frame(width: max(3, geo.size.width * fraction))
+                if count > 0 {
+                    Capsule()
+                        .fill(.tint.opacity(0.75))
+                        .frame(width: max(6, geo.size.width * fraction))
+                }
             }
             .frame(height: 8)
             Text("\(count)")
