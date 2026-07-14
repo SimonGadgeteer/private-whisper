@@ -10,6 +10,7 @@ struct SettingsView: View {
     @State private var connectionTestResult: String?
     @State private var newToneBundleID = ""
     @State private var newToneHint = ""
+    @State private var confirmModelRemoval = false
 
     private let whisperModels = ["large-v3-turbo", "large-v3"]
 
@@ -155,6 +156,23 @@ struct SettingsView: View {
                 ))
             }
 
+            Section("Uninstall") {
+                VStack(alignment: .leading, spacing: 6) {
+                    Button("Remove Downloaded Models…", role: .destructive) {
+                        confirmModelRemoval = true
+                    }
+                    Text("Deletes the transcription and cleanup models (\(modelsSizeString)) from ~/Library/Application Support/PrivateWhisper. To uninstall completely: click this, then quit the app and drag it to the Trash.")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+                .confirmationDialog(
+                    "Delete all downloaded models (\(modelsSizeString))? They can be re-downloaded anytime.",
+                    isPresented: $confirmModelRemoval, titleVisibility: .visible
+                ) {
+                    Button("Delete Models", role: .destructive) { removeModels() }
+                }
+            }
+
             Section("Permissions") {
                 HStack {
                     Label(
@@ -187,6 +205,19 @@ struct SettingsView: View {
     private func refreshModels() async {
         availableCleanupModels = await CleanupService.availableModels(
             baseURL: configStore.config.lmStudioURL)
+    }
+
+    private var modelsSizeString: String {
+        let fm = FileManager.default
+        let files = (try? fm.contentsOfDirectory(at: AppConfig.modelsDir, includingPropertiesForKeys: [.fileSizeKey])) ?? []
+        let bytes = files.reduce(0) { $0 + ((try? $1.resourceValues(forKeys: [.fileSizeKey]).fileSize) ?? 0) }
+        return String(format: "%.1f GB", Double(bytes) / 1_000_000_000)
+    }
+
+    private func removeModels() {
+        EmbeddedLLMServer.shared.stop()
+        try? FileManager.default.removeItem(at: AppConfig.modelsDir)
+        dlog("Models removed by user")
     }
 
     private func setLaunchAtLogin(_ enabled: Bool) {

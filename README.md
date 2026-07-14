@@ -51,6 +51,10 @@ The DMG is small — models are NOT bundled. On first launch the app shows a set
 
 Signing: the app is signed with a development certificate, so recipients must right-click → **Open** on first launch (or System Settings → Privacy & Security → **Open Anyway**). Gatekeeper-clean distribution requires a paid Apple Developer ID + notarization — hook it into scripts/package.sh when available.
 
+## Uninstall
+
+Settings → **Remove Downloaded Models…** (deletes `~/Library/Application Support/PrivateWhisper`, ~4 GB), then quit and trash the app. Dragging the app to the Trash alone leaves the models folder behind.
+
 ## Headless test mode
 
 ```bash

@@ -40,6 +40,12 @@ Advanced: if LM Studio is running (locally or on another machine on your
 network), the app uses it automatically instead of the embedded model.
 
 Everything runs on your Mac. No audio or text ever leaves it.
+
+UNINSTALL: open the app window (menu bar icon → Open Private Whisper) →
+Settings → "Remove Downloaded Models…", then quit the app and drag it from
+Applications to the Trash. (The models live in ~/Library/Application
+Support/PrivateWhisper — that button deletes them; dragging the app alone
+would leave ~4 GB behind.)
 EOF
 
 hdiutil create -volname "Private Whisper" -srcfolder "$STAGING" -ov -format UDZO "$DMG" >/dev/null
