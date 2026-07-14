@@ -30,12 +30,14 @@ Private Whisper — local push-to-talk dictation
    down → "Open Anyway".)
 3. Grant Microphone when prompted, and enable the app under
    System Settings → Privacy & Security → Accessibility.
-4. The app offers to download the transcription model (~1.5 GB) on first
-   run — one click, then you can dictate: hold RIGHT OPTION, speak, release.
+4. On first run the app shows two one-click downloads with progress bars:
+   - Transcription model (required, ~1.5 GB)
+   - Cleanup model (optional, ~2.7 GB) — polishes your dictation into
+     clean text, fully on your Mac (no other software needed)
+   Then dictate: hold RIGHT OPTION, speak, release.
 
-Optional (better text quality): install LM Studio (lmstudio.ai), download
-the model "qwen/qwen3.5-4b", and enable the local server (port 1234).
-Without it the app still works and inserts the raw transcription.
+Advanced: if LM Studio is running (locally or on another machine on your
+network), the app uses it automatically instead of the embedded model.
 
 Everything runs on your Mac. No audio or text ever leaves it.
 EOF

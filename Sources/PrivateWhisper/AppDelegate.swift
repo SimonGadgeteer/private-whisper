@@ -109,6 +109,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     func applicationWillTerminate(_ notification: Notification) {
+        EmbeddedLLMServer.shared.stop()
         pipeline?.shutdown()
     }
 

@@ -16,11 +16,14 @@ enum TestMode {
         let audioPath = arguments[fileIndex + 1]
         let cleanupEnabled = !arguments.contains("--no-cleanup")
 
-        let semaphore = DispatchSemaphore(value: 0)
+        // Pump the main run loop instead of blocking it: the pipeline hops to
+        // the main actor (backend resolution / embedded sidecar), which would
+        // deadlock behind a semaphore.wait() on the main thread.
+        var finished = false
         var exitCode: Int32 = 0
 
-        Task {
-            defer { semaphore.signal() }
+        Task { @MainActor in
+            defer { finished = true }
             do {
                 let config = AppConfig.load()
                 let samples = try loadSamples(path: audioPath)
@@ -46,11 +49,13 @@ enum TestMode {
                     "model_load_seconds": modelLoadSeconds,
                 ]
 
-                if cleanupEnabled && !result.text.isEmpty {
+                if cleanupEnabled && !result.text.isEmpty,
+                   let backend = await CleanupService.resolveBackend(config: config) {
                     let cleanup = CleanupService(
-                        baseURL: config.lmStudioURL,
-                        model: config.cleanupModel,
+                        baseURL: backend.baseURL,
+                        model: backend.model,
                         timeout: config.cleanupTimeoutSeconds)
+                    output["cleanup_backend"] = backend.baseURL
                     let cStart = Date()
                     do {
                         let cleaned = try await cleanup.cleanup(
@@ -74,7 +79,9 @@ enum TestMode {
             }
         }
 
-        semaphore.wait()
+        while !finished {
+            RunLoop.main.run(mode: .default, before: Date().addingTimeInterval(0.05))
+        }
         exit(exitCode)
     }
 

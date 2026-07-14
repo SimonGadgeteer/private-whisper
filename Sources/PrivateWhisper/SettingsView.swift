@@ -102,6 +102,13 @@ struct SettingsView: View {
                 }
             }
 
+            Section("Embedded cleanup (no LM Studio needed)") {
+                DownloadRow(key: "cleanup-llm", required: false, downloader: ModelDownloader.shared)
+                Text("Used automatically whenever LM Studio is unreachable. Runs a bundled llama-server on demand; stops after 10 minutes idle.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+
             Section("Per-app tone") {
                 ForEach(configStore.config.appTones.keys.sorted(), id: \.self) { bundleID in
                     HStack {

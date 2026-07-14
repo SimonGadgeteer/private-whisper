@@ -193,11 +193,15 @@ final class PipelineController {
         var finalText = result.text
         var cleanupSeconds: Double?
         var fellBack = false
+        if config.cleanupEnabled, await CleanupService.resolveBackend(config: config) == nil {
+            fellBack = true
+            dlog("No cleanup backend reachable — using raw transcript")
+        }
 
-        if config.cleanupEnabled {
+        if config.cleanupEnabled, let backend = await CleanupService.resolveBackend(config: config) {
             let cleanup = CleanupService(
-                baseURL: config.lmStudioURL,
-                model: config.cleanupModel,
+                baseURL: backend.baseURL,
+                model: backend.model,
                 timeout: config.cleanupTimeoutSeconds)
             let cStart = Date()
             do {
@@ -240,9 +244,14 @@ final class PipelineController {
     private func finishCommand(instruction: String, selection: String, config: AppConfig) async {
         // Command mode has no raw fallback that makes sense — the LLM *is* the
         // feature. Longer timeout: rewrites scale with selection length.
+        guard let backend = await CleanupService.resolveBackend(config: config) else {
+            statusItem.setState(.warning("No cleanup model available"))
+            hud.flash("Command mode needs LM Studio or the embedded cleanup model", seconds: 4)
+            return
+        }
         let cleanup = CleanupService(
-            baseURL: config.lmStudioURL,
-            model: config.cleanupModel,
+            baseURL: backend.baseURL,
+            model: backend.model,
             timeout: max(30, config.cleanupTimeoutSeconds * 2))
         do {
             dlog("Command mode: \"\(instruction.prefix(60))\" on \(selection.count) chars")

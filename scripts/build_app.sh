@@ -21,6 +21,11 @@ mkdir -p "$APP_DIR/Contents/MacOS" "$APP_DIR/Contents/Frameworks" "$APP_DIR/Cont
 cp "$BUILD_DIR/$APP_NAME" "$APP_DIR/Contents/MacOS/"
 cp "$PROJECT_DIR/Resources/Info.plist" "$APP_DIR/Contents/"
 
+# Embedded cleanup sidecar (llama.cpp server, static build)
+if [ -f "$PROJECT_DIR/vendor/llama-server" ]; then
+    cp "$PROJECT_DIR/vendor/llama-server" "$APP_DIR/Contents/MacOS/"
+fi
+
 # Embed the whisper dynamic framework (macOS slice of the xcframework).
 cp -R "$PROJECT_DIR/Frameworks/whisper.xcframework/macos-arm64_x86_64/whisper.framework" \
       "$APP_DIR/Contents/Frameworks/"
@@ -28,6 +33,9 @@ cp -R "$PROJECT_DIR/Frameworks/whisper.xcframework/macos-arm64_x86_64/whisper.fr
 echo "==> Codesigning"
 codesign --force --sign "$SIGN_IDENTITY" \
     "$APP_DIR/Contents/Frameworks/whisper.framework"
+if [ -f "$APP_DIR/Contents/MacOS/llama-server" ]; then
+    codesign --force --sign "$SIGN_IDENTITY" "$APP_DIR/Contents/MacOS/llama-server"
+fi
 codesign --force --sign "$SIGN_IDENTITY" \
     --identifier ch.simonschwarz.PrivateWhisper \
     "$APP_DIR"

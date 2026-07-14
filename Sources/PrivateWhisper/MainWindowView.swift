@@ -29,41 +29,69 @@ struct MainWindowView: View {
     }
 }
 
-/// First-run setup: the transcription model isn't bundled with the app.
+/// First-run setup: models aren't bundled with the app.
 private struct SetupBanner: View {
     @ObservedObject var configStore: ConfigStore
     @ObservedObject var downloader: ModelDownloader
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Label("Setup: transcription model required", systemImage: "arrow.down.circle")
+        VStack(alignment: .leading, spacing: 10) {
+            Label("Setup — download the models once, everything stays on this Mac", systemImage: "arrow.down.circle")
                 .font(.headline)
-            Text("Private Whisper transcribes locally with Whisper \(configStore.config.whisperModel). The model isn't bundled — download it once (\(ModelDownloader.sources[configStore.config.whisperModel]?.size ?? "~1.5 GB")), everything stays on this Mac.")
-                .font(.caption)
-                .foregroundStyle(.secondary)
-            if downloader.downloading {
-                ProgressView(value: downloader.progress) {
-                    Text(String(format: "Downloading… %.0f%%", downloader.progress * 100))
-                        .font(.caption)
-                }
-            } else {
-                HStack {
-                    Button("Download Model") {
-                        downloader.download(model: configStore.config.whisperModel)
-                    }
-                    .buttonStyle(.borderedProminent)
-                    if let error = downloader.errorMessage {
-                        Text(error).font(.caption).foregroundStyle(.red)
-                    }
-                }
-            }
-            Text("Optional, for polished text: install LM Studio (lmstudio.ai), get the model \"qwen/qwen3.5-4b\", enable the local server. Without it, dictation inserts the raw transcript.")
+            DownloadRow(
+                key: configStore.config.whisperModel,
+                required: true,
+                downloader: downloader)
+            DownloadRow(
+                key: "cleanup-llm",
+                required: false,
+                downloader: downloader)
+            Text("Without the cleanup model, dictation inserts the raw transcript. If LM Studio is running (locally or on another machine), it is used instead of the embedded model.")
                 .font(.caption2)
                 .foregroundStyle(.tertiary)
         }
         .padding(14)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(.yellow.opacity(0.12))
+    }
+}
+
+/// One model download line with live progress; reused by Settings.
+struct DownloadRow: View {
+    let key: String
+    let required: Bool
+    @ObservedObject var downloader: ModelDownloader
+
+    var body: some View {
+        let item = ModelDownloader.items[key]
+        let state = downloader.state(key)
+        HStack(spacing: 8) {
+            VStack(alignment: .leading, spacing: 3) {
+                HStack(spacing: 6) {
+                    Text(item?.label ?? key).font(.caption)
+                    Text(required ? "required" : "optional")
+                        .font(.caption2)
+                        .padding(.horizontal, 5).padding(.vertical, 1)
+                        .background((required ? Color.orange : Color.secondary).opacity(0.2),
+                                    in: Capsule())
+                }
+                if state.downloading {
+                    ProgressView(value: state.progress)
+                        .progressViewStyle(.linear)
+                    Text(String(format: "%.0f %%", state.progress * 100))
+                        .font(.caption2).foregroundStyle(.secondary)
+                } else if let error = state.error {
+                    Text(error).font(.caption2).foregroundStyle(.red)
+                }
+            }
+            Spacer()
+            if ModelDownloader.isInstalled(key) {
+                Label("Installed", systemImage: "checkmark.circle.fill")
+                    .font(.caption).foregroundStyle(.green)
+            } else if !state.downloading {
+                Button("Download (\(item?.size ?? "?"))") { downloader.download(key) }
+            }
+        }
     }
 }
 

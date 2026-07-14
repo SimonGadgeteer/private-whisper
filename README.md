@@ -47,7 +47,7 @@ Config lives at `~/Library/Application Support/PrivateWhisper/config.json`.
 ./scripts/package.sh     # → build/PrivateWhisper-<version>.dmg (+ SHA-256)
 ```
 
-The DMG is small — models are NOT bundled. On first launch the app opens its window with a one-click **Download Model** setup (~1.5 GB from Hugging Face into `~/Library/Application Support/PrivateWhisper/models/`). LM Studio + `qwen/qwen3.5-4b` are optional (without them, raw transcripts are inserted); instructions ship in the DMG's READ ME FIRST.txt.
+The DMG is small — models are NOT bundled. On first launch the app shows a setup banner with one-click downloads and progress bars: the Whisper model (required, 1.5 GB) and the embedded cleanup model (optional, 2.7 GB — Qwen 3.5 4B GGUF served by a bundled `llama-server` sidecar, started on demand, stopped after 10 min idle). **LM Studio is no longer required**: the backend resolves automatically — LM Studio (local or remote Mac Mini) if reachable, else the embedded sidecar, else raw transcripts.
 
 Signing: the app is signed with a development certificate, so recipients must right-click → **Open** on first launch (or System Settings → Privacy & Security → **Open Anyway**). Gatekeeper-clean distribution requires a paid Apple Developer ID + notarization — hook it into scripts/package.sh when available.
 
