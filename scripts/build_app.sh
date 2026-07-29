@@ -9,7 +9,11 @@ PROJECT_DIR="$PWD"
 APP_NAME="PrivateWhisper"
 BUILD_DIR="$PROJECT_DIR/.build/arm64-apple-macosx/release"
 APP_DIR="$PROJECT_DIR/build/$APP_NAME.app"
-SIGN_IDENTITY="${SIGN_IDENTITY:-Apple Development: REDACTED-IDENTITY}"
+# Auto-detect a codesigning identity; override with SIGN_IDENTITY=... .
+# Falls back to ad-hoc signing ("-") — works locally, but TCC grants then
+# reset on every rebuild (see DECISIONS.md §9).
+SIGN_IDENTITY="${SIGN_IDENTITY:-$(security find-identity -v -p codesigning 2>/dev/null | awk -F'"' '/Developer ID Application|Apple Development/{print $2; exit}')}"
+SIGN_IDENTITY="${SIGN_IDENTITY:--}"
 
 echo "==> swift build -c release"
 swift build -c release --arch arm64
