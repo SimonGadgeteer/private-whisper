@@ -1,3 +1,5 @@
+using ProgressBar = System.Windows.Controls.ProgressBar;
+using Button = System.Windows.Controls.Button;
 using System.Windows;
 using System.Windows.Controls;
 

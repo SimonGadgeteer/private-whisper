@@ -1,3 +1,4 @@
+using DataFormats = System.Windows.DataFormats;
 using DataObject = System.Windows.DataObject;
 using IDataObject = System.Windows.IDataObject;
 using Clipboard = System.Windows.Clipboard;

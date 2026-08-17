@@ -1,3 +1,4 @@
+using Application = System.Windows.Application;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Threading;

@@ -1,3 +1,4 @@
+using Color = System.Windows.Media.Color;
 using Rectangle = System.Windows.Shapes.Rectangle;
 using System.Windows;
 using System.Windows.Input;

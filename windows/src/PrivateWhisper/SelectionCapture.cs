@@ -1,3 +1,5 @@
+using DataObject = System.Windows.DataObject;
+using Clipboard = System.Windows.Clipboard;
 using System.Windows;
 using System.Windows.Automation;
 using System.Windows.Automation.Text;
