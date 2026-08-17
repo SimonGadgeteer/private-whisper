@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <!-- WinForms is used only for the NotifyIcon system-tray API (more reliable
+         than third-party WPF tray packages). -->
+    <UseWindowsForms>true</UseWindowsForms>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <PlatformTarget>x64</PlatformTarget>
+    <RuntimeIdentifiers>win-x64</RuntimeIdentifiers>
+    <RootNamespace>PrivateWhisper</RootNamespace>
+    <AssemblyName>PrivateWhisper</AssemblyName>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <Version>0.2.0</Version>
+    <Company>Private Whisper</Company>
+    <Product>Private Whisper</Product>
+    <Description>Local push-to-talk dictation. Audio never leaves the machine.</Description>
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="NAudio" Version="2.2.1" />
+  </ItemGroup>
+
+  <!-- Shared, eval-verified assets: prompts and model manifest live in
+       shared/ at the repo root so macOS and Windows cannot drift apart. -->
+  <ItemGroup>
+    <EmbeddedResource Include="..\..\..\shared\prompts\cleanup_prompt.txt" LogicalName="PrivateWhisper.Resources.cleanup_prompt.txt" />
+    <EmbeddedResource Include="..\..\..\shared\prompts\rewrite_prompt.txt" LogicalName="PrivateWhisper.Resources.rewrite_prompt.txt" />
+    <EmbeddedResource Include="..\..\..\shared\model_manifest.json" LogicalName="PrivateWhisper.Resources.model_manifest.json" />
+  </ItemGroup>
+
+</Project>

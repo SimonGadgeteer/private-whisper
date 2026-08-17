@@ -1,0 +1,49 @@
+<Window x:Class="PrivateWhisper.FirstRunWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Private Whisper — Model Setup"
+        Width="540"
+        SizeToContent="Height"
+        ResizeMode="NoResize"
+        WindowStartupLocation="CenterScreen">
+    <StackPanel Margin="16">
+        <TextBlock TextWrapping="Wrap" Margin="0,0,0,12"
+                   Text="Private Whisper runs entirely on this machine. Two models are downloaded once and stored locally; nothing you dictate ever leaves the computer." />
+
+        <Border BorderBrush="#DDDDDD" BorderThickness="1" CornerRadius="4" Padding="10" Margin="0,0,0,10">
+            <StackPanel>
+                <DockPanel>
+                    <Button x:Name="WhisperDownloadButton" Content="Download" Width="90"
+                            DockPanel.Dock="Right" Click="WhisperDownloadButton_Click" />
+                    <StackPanel>
+                        <TextBlock x:Name="WhisperLabel" FontWeight="Bold" Text="Transcription model" />
+                        <TextBlock x:Name="WhisperSizeLabel" Foreground="Gray" FontSize="11" />
+                    </StackPanel>
+                </DockPanel>
+                <ProgressBar x:Name="WhisperProgress" Height="8" Margin="0,8,0,0" Minimum="0" Maximum="1" />
+                <TextBlock x:Name="WhisperStatus" Foreground="Gray" FontSize="11" Margin="0,4,0,0" />
+            </StackPanel>
+        </Border>
+
+        <Border BorderBrush="#DDDDDD" BorderThickness="1" CornerRadius="4" Padding="10" Margin="0,0,0,10">
+            <StackPanel>
+                <DockPanel>
+                    <Button x:Name="CleanupDownloadButton" Content="Download" Width="90"
+                            DockPanel.Dock="Right" Click="CleanupDownloadButton_Click" />
+                    <StackPanel>
+                        <TextBlock x:Name="CleanupLabel" FontWeight="Bold" Text="Cleanup model" />
+                        <TextBlock x:Name="CleanupSizeLabel" Foreground="Gray" FontSize="11" />
+                    </StackPanel>
+                </DockPanel>
+                <ProgressBar x:Name="CleanupProgress" Height="8" Margin="0,8,0,0" Minimum="0" Maximum="1" />
+                <TextBlock x:Name="CleanupStatus" Foreground="Gray" FontSize="11" Margin="0,4,0,0" />
+            </StackPanel>
+        </Border>
+
+        <TextBlock TextWrapping="Wrap" Foreground="Gray" FontSize="11" Margin="0,0,0,12"
+                   Text="The cleanup model is optional: if LM Studio is running (locally or on another machine on your network), Private Whisper uses it instead. Without either, dictations are inserted as raw transcripts." />
+
+        <Button x:Name="ContinueButton" Content="Continue" Width="100" HorizontalAlignment="Right"
+                Click="ContinueButton_Click" />
+    </StackPanel>
+</Window>

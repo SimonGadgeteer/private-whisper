@@ -1,0 +1,43 @@
+<Window x:Class="PrivateWhisper.StatsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Private Whisper — Statistics"
+        Width="420"
+        SizeToContent="Height"
+        ResizeMode="NoResize"
+        WindowStartupLocation="CenterScreen">
+    <StackPanel Margin="16">
+        <TextBlock Text="Usage" FontWeight="Bold" Margin="0,0,0,6" />
+        <Grid Margin="0,0,0,12">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="220" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <TextBlock Text="Dictations" Grid.Row="0" />
+            <TextBlock x:Name="DictationsText" Grid.Row="0" Grid.Column="1" />
+            <TextBlock Text="Words" Grid.Row="1" />
+            <TextBlock x:Name="WordsText" Grid.Row="1" Grid.Column="1" />
+            <TextBlock Text="Audio dictated" Grid.Row="2" />
+            <TextBlock x:Name="AudioText" Grid.Row="2" Grid.Column="1" />
+            <TextBlock Text="Average latency (per dictation)" Grid.Row="3" />
+            <TextBlock x:Name="LatencyText" Grid.Row="3" Grid.Column="1" />
+            <TextBlock Text="Cleanup fallbacks (raw transcript)" Grid.Row="4" />
+            <TextBlock x:Name="FallbacksText" Grid.Row="4" Grid.Column="1" />
+            <TextBlock Text="Today" Grid.Row="5" />
+            <TextBlock x:Name="TodayText" Grid.Row="5" Grid.Column="1" />
+        </Grid>
+        <TextBlock Text="By language" FontWeight="Bold" Margin="0,0,0,6" />
+        <TextBlock x:Name="LanguagesText" Margin="0,0,0,12" TextWrapping="Wrap" />
+        <TextBlock Text="Last 7 days" FontWeight="Bold" Margin="0,0,0,6" />
+        <TextBlock x:Name="LastDaysText" Margin="0,0,0,12" TextWrapping="Wrap" FontFamily="Consolas" />
+        <Button Content="Close" Width="90" HorizontalAlignment="Right" Click="CloseButton_Click" />
+    </StackPanel>
+</Window>

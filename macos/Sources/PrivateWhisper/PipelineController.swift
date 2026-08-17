@@ -216,6 +216,7 @@ final class PipelineController {
             }
         }
 
+        finalText = CorrectionLearner.enforceDictionary(finalText, dictionary: config.dictionary)
         let delivery = deliver(finalText, fellBack: fellBack)
         if case .injected = delivery {
             correctionLearner?.watch(injected: finalText)
