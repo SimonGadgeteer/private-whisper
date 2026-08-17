@@ -1,0 +1,28 @@
+name: windows-ci
+
+on:
+  push:
+    paths:
+      - "windows/**"
+      - "shared/**"
+      - ".github/workflows/windows-ci.yml"
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+      - name: Build
+        run: dotnet build windows/PrivateWhisper.sln -c Release
+      - name: Publish (self-contained, win-x64)
+        run: dotnet publish windows/src/PrivateWhisper/PrivateWhisper.csproj -c Release -r win-x64 --self-contained -p:PublishSingleFile=true -o windows/dist/publish
+      - name: Upload publish artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: PrivateWhisper-windows-build
+          path: windows/dist/publish/
+          retention-days: 7

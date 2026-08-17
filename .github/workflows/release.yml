@@ -1,0 +1,54 @@
+name: release
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+jobs:
+  macos:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build and package DMG (ad-hoc signed)
+        run: |
+          cd macos
+          ./scripts/package.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: PrivateWhisper-macos
+          path: macos/build/PrivateWhisper-*.dmg
+
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+      - name: Package (portable zip + installer)
+        shell: pwsh
+        run: windows/scripts/package.ps1
+      - uses: actions/upload-artifact@v4
+        with:
+          name: PrivateWhisper-windows
+          path: |
+            windows/dist/*.zip
+            windows/dist/*.exe
+
+  publish:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [macos, windows]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          merge-multiple: true
+          path: artifacts
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: artifacts/*
+          draft: true
+          generate_release_notes: true

@@ -1,0 +1,20 @@
+{
+  "whisper": {
+    "large-v3-turbo": {
+      "url": "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-large-v3-turbo.bin",
+      "file": "ggml-large-v3-turbo.bin", "size": "1.5 GB", "required": true
+    },
+    "large-v3": {
+      "url": "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-large-v3.bin",
+      "file": "ggml-large-v3.bin", "size": "2.9 GB", "required": false
+    }
+  },
+  "cleanup": {
+    "qwen3.5-4b": {
+      "url": "https://huggingface.co/lmstudio-community/Qwen3.5-4B-GGUF/resolve/main/Qwen3.5-4B-Q4_K_M.gguf",
+      "file": "Qwen3.5-4B-Q4_K_M.gguf", "size": "2.7 GB", "required": false,
+      "llama_server_args": ["-c", "8192", "-ngl", "99", "--chat-template-kwargs", "{\"enable_thinking\": false}", "--no-webui"]
+    }
+  },
+  "note": "Model choices are eval-verified; see evals/results.md. Do not change without re-running the eval."
+}

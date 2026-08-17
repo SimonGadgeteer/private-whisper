@@ -29,7 +29,8 @@ CANDIDATES = [
     ("qwen3.6-27b-mlx",                              False, "reference only — exceeds Mini RAM"),
 ]
 
-SYSTEM_PROMPT = """You clean up dictated text. Rules:
+_shared = HERE.parent / "shared" / "prompts" / "cleanup_prompt.txt"
+SYSTEM_PROMPT = _shared.read_text().strip() if _shared.exists() else """You clean up dictated text. Rules:
 - Output ONLY the cleaned text. No preamble, no quotes, no commentary.
 - Keep the same language as the input (German stays German, French stays French, English stays English).
 - Remove filler words (um, äh, also, alors, you know), false starts, and repetitions.

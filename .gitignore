@@ -1,5 +1,10 @@
 .build/
-build/
 .DS_Store
+macos/.build/
+macos/build/
 evals/results.json
 evals/results-raw.json
+windows/**/bin/
+windows/**/obj/
+windows/runtime/
+windows/dist/

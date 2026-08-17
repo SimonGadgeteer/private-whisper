@@ -1,5 +1,7 @@
 # Private Whisper
 
+> Monorepo: `macos/` (shipping app) · `windows/` (in development) · `shared/` (canonical prompts + model manifest) · `evals/` (the quality gate every platform must pass) · `docs/`
+
 Push-to-talk dictation for macOS, 100% local: hold **Right Option**, speak (English, German, Swiss German, French), release — polished text appears at the cursor of whatever app has focus.
 
 Pipeline: `AVAudioEngine` mic capture → **whisper.cpp** (Metal, embedded) → cleanup pass via **LM Studio** (local, OpenAI-compatible) → paste injection with pasteboard restore. No network egress; all endpoints are `localhost`.
@@ -13,8 +15,8 @@ Pipeline: `AVAudioEngine` mic capture → **whisper.cpp** (Metal, embedded) → 
 ## Build & run
 
 ```bash
-./scripts/build_app.sh          # swift build + assemble + codesign
-open build/PrivateWhisper.app
+cd macos && ./scripts/build_app.sh   # swift build + assemble + codesign
+open macos/build/PrivateWhisper.app
 ```
 
 On first launch, grant:
@@ -44,7 +46,7 @@ Config lives at `~/Library/Application Support/PrivateWhisper/config.json`.
 ## Sharing / installing on another Mac
 
 ```bash
-./scripts/package.sh     # → build/PrivateWhisper-<version>.dmg (+ SHA-256)
+cd macos && ./scripts/package.sh     # → macos/build/PrivateWhisper-<version>.dmg (+ SHA-256)
 ```
 
 The DMG is small — models are NOT bundled. On first launch the app shows a setup banner with one-click downloads and progress bars: the Whisper model (required, 1.5 GB) and the embedded cleanup model (optional, 2.7 GB — Qwen 3.5 4B GGUF served by a bundled `llama-server` sidecar, started on demand, stopped after 10 min idle). **LM Studio is no longer required**: the backend resolves automatically — LM Studio (local or remote Mac Mini) if reachable, else the embedded sidecar, else raw transcripts.
@@ -58,7 +60,7 @@ Settings → **Remove Downloaded Models…** (deletes `~/Library/Application Sup
 ## Headless test mode
 
 ```bash
-./build/PrivateWhisper.app/Contents/MacOS/PrivateWhisper --test-file audio.wav [--no-cleanup]
+./macos/build/PrivateWhisper.app/Contents/MacOS/PrivateWhisper --test-file audio.wav [--no-cleanup]
 ```
 
 Prints JSON with raw transcript, detected language, cleaned text, and timings. Used by the automated pipeline tests (`say`-synthesized EN/DE/FR audio).
