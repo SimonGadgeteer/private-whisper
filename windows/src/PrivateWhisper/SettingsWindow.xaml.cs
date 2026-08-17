@@ -1,3 +1,4 @@
+using ComboBox = System.Windows.Controls.ComboBox;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;

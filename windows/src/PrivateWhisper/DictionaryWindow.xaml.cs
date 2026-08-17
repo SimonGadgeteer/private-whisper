@@ -1,3 +1,4 @@
+using KeyEventArgs = System.Windows.Input.KeyEventArgs;
 using System.Windows;
 using System.Windows.Input;
 

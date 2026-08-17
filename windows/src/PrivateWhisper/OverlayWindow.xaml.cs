@@ -1,3 +1,4 @@
+using Rectangle = System.Windows.Shapes.Rectangle;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Interop;
