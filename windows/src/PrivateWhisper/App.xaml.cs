@@ -54,6 +54,7 @@ public partial class App : Application
         };
 
         Log.D($"=== Private Whisper starting (portable={AppConfig.IsPortable}) ===");
+        AudioRecorder.LogDeviceInventory();
 
         configStore = new ConfigStore();
         overlay = new OverlayWindow(configStore) { Enabled = configStore.Config.OverlayEnabled };

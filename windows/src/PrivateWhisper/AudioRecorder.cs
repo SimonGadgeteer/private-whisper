@@ -68,7 +68,35 @@ public sealed class AudioRecorder
                 try { device = enumerator.GetDevice(deviceId); }
                 catch { device = null; } // unplugged since it was chosen → default
             }
-            device ??= enumerator.GetDefaultAudioEndpoint(DataFlow.Capture, Role.Console);
+            if (device == null)
+            {
+                try
+                {
+                    device = enumerator.GetDefaultAudioEndpoint(DataFlow.Capture, Role.Console);
+                }
+                catch (Exception exDefault)
+                {
+                    // 0x80070490 here = Windows exposes NO capture endpoint to
+                    // this (desktop) app — typically the privacy/policy switch
+                    // "Let desktop apps access your microphone", or the device
+                    // is disabled. Try any active endpoint before giving up.
+                    Log.D($"recorder: GetDefaultAudioEndpoint failed: {exDefault.Message}");
+                    device = enumerator
+                        .EnumerateAudioEndPoints(DataFlow.Capture, DeviceState.Active)
+                        .FirstOrDefault();
+                    if (device == null)
+                    {
+                        LogDeviceInventory();
+                        throw new InvalidOperationException(
+                            "Windows reports no available microphone for this app. Check " +
+                            "Settings > Privacy & security > Microphone: enable 'Microphone access' AND " +
+                            "'Let desktop apps access your microphone' (bottom of the page; may be locked by " +
+                            "company policy). Also verify a microphone appears under Settings > System > Sound > Input. " +
+                            $"Underlying error: {exDefault.Message}", exDefault);
+                    }
+                    Log.D($"recorder: no default endpoint, using first active: {SafeName(device)}");
+                }
+            }
         }
         finally
         {
@@ -128,9 +156,14 @@ public sealed class AudioRecorder
             $"Underlying error: {firstError?.Message}", firstError);
     }
 
+    private static string SafeName(MMDevice d)
+    {
+        try { return d.FriendlyName; } catch { return d.ID; }
+    }
+
     /// <summary>Writes the capture-device inventory to the log so field
     /// failures are diagnosable from app.log alone.</summary>
-    private static void LogDeviceInventory()
+    public static void LogDeviceInventory()
     {
         try
         {
