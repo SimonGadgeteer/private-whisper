@@ -119,7 +119,7 @@ public sealed class AppConfig
 
     public static string SupportDir => IsPortable
         ? BaseDir
-        : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "PrivateWhisper");
+        : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "PrivateWhisper");
 
     public static string ConfigPath => Path.Combine(SupportDir, "config.json");
     public static string ModelsDir => Path.Combine(SupportDir, "models");

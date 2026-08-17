@@ -20,9 +20,11 @@
   powershell -ExecutionPolicy Bypass -File scripts\package.ps1 -Installer
 #>
 param(
-    [switch]$Installer,
+    [string]$Version = "0.0.0-dev",
+    [switch]$NoInstaller,
     [switch]$SkipPublish
 )
+$AppVersion = $Version -replace "^v", ""
 
 $ErrorActionPreference = "Stop"
 
@@ -41,7 +43,6 @@ $WhisperTag     = "v1.9.2"
 # No Vulkan asset is published; CPU is the safe default for no-admin notebooks.
 $WhisperZipUrl  = "https://github.com/ggml-org/whisper.cpp/releases/download/v1.9.2/whisper-bin-x64.zip"
 
-$AppVersion = "0.2.0"
 
 # ---------------------------------------------------------------------------
 $WindowsDir = Split-Path -Parent $PSScriptRoot   # ...\windows
@@ -112,7 +113,9 @@ if (Test-Path $PortableDir) { Remove-Item -Recurse -Force $PortableDir }
 Copy-Item -Recurse $AppDir $PortableDir
 # The marker switches the app to portable mode: config/models/stats/log stay
 # in this folder. Delete folder = fully uninstalled.
-Set-Content -Path (Join-Path $PortableDir "portable.marker") -Value "portable"
+# No portable.marker in the shipped zip: data lives in %LOCALAPPDATA%\PrivateWhisper
+# so models survive version upgrades. True USB-stick portability: the user
+# creates an empty portable.marker next to the exe (documented in README).
 
 $PortableZip = Join-Path $DistDir "PrivateWhisper-windows-$AppVersion-portable.zip"
 if (Test-Path $PortableZip) { Remove-Item -Force $PortableZip }
@@ -122,7 +125,7 @@ Write-Host "Portable zip: $PortableZip"
 Write-Host "SHA-256:      $hash"
 
 # 4. Installer (optional) ----------------------------------------------------
-if ($Installer) {
+if (-not $NoInstaller) {
     Write-Host "== Inno Setup installer =="
     $iscc = @(
         "$env:LOCALAPPDATA\Programs\Inno Setup 6\ISCC.exe",
@@ -130,7 +133,7 @@ if ($Installer) {
         "ISCC.exe"
     ) | Where-Object { Get-Command $_ -ErrorAction SilentlyContinue } | Select-Object -First 1
     if (-not $iscc) { throw "ISCC.exe (Inno Setup 6) not found — install it or add it to PATH" }
-    & $iscc (Join-Path $WindowsDir "installer\setup.iss")
+    & $iscc "/DMyAppVersion=$AppVersion" (Join-Path $WindowsDir "installer\setup.iss")
     if ($LASTEXITCODE -ne 0) { throw "Inno Setup compile failed" }
     Write-Host "Installer written to $DistDir"
 }

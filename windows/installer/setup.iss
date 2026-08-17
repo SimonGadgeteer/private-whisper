@@ -7,7 +7,9 @@
 ;   ISCC.exe installer\setup.iss
 
 #define MyAppName "Private Whisper"
-#define MyAppVersion "0.2.0"
+#ifndef MyAppVersion
+#define MyAppVersion "0.0.0"
+#endif
 #define MyAppExeName "PrivateWhisper.exe"
 #define MyAppPublisher "Private Whisper"
 

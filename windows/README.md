@@ -107,3 +107,17 @@ mode) — all fields optional, missing keys keep defaults:
 - Launch-at-login uses an HKCU `Run` entry; it is removed when the setting is
   turned off (or delete value `PrivateWhisper` under
   `HKCU\Software\Microsoft\Windows\CurrentVersion\Run`).
+
+
+## Model storage & upgrades
+
+By default all data (models, config, stats, log) lives in `%LOCALAPPDATA%\PrivateWhisper` —
+**upgrading the app never re-downloads models**, whether you use the installer or
+replace a portable folder.
+
+True USB-stick portability (data next to the exe): create an empty file named
+`portable.marker` beside `PrivateWhisper.exe`. Note that in this mode a fresh
+unzip to a new folder starts with no models.
+
+Migrating from a pre-v0.2.2 portable folder: move the old `models` folder to
+`%LOCALAPPDATA%\PrivateWhisper\models` (and delete the old `portable.marker`).

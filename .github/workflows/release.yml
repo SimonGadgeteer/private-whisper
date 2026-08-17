@@ -28,7 +28,7 @@ jobs:
           dotnet-version: "8.0.x"
       - name: Package (portable zip + installer)
         shell: pwsh
-        run: windows/scripts/package.ps1
+        run: windows/scripts/package.ps1 -Version "${{ github.ref_name }}"
       - uses: actions/upload-artifact@v4
         with:
           name: PrivateWhisper-windows
