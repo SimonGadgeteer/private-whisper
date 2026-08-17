@@ -72,7 +72,18 @@ public sealed class AudioRecorder
             {
                 try
                 {
-                    device = enumerator.GetDefaultAudioEndpoint(DataFlow.Capture, Role.Console);
+                    // Communications first: Windows routes headset mics there,
+                    // and dictation belongs on the headset when one is present.
+                    // (Console default is often the internal mic — possibly
+                    // muted — which records perfect silence.)
+                    try
+                    {
+                        device = enumerator.GetDefaultAudioEndpoint(DataFlow.Capture, Role.Communications);
+                    }
+                    catch
+                    {
+                        device = enumerator.GetDefaultAudioEndpoint(DataFlow.Capture, Role.Console);
+                    }
                 }
                 catch (Exception exDefault)
                 {
@@ -123,6 +134,7 @@ public sealed class AudioRecorder
         {
             var cap = new WasapiCapture(device, useEventSync, 100);
             WaveFormat format = cap.WaveFormat;
+            Log.D($"recorder: using '{SafeName(device)}' format={format.SampleRate}Hz/{format.Channels}ch/{format.BitsPerSample}bit {format.Encoding} eventSync={useEventSync}");
             if (format.SampleRate <= 0 || format.Channels <= 0)
             {
                 cap.Dispose();
