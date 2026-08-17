@@ -1,4 +1,10 @@
-# Private Whisper
+<p align="center">
+  <img src="assets/logo.png" width="140" alt="Private Whisper" />
+</p>
+
+<h1 align="center">Private Whisper</h1>
+
+<p align="center"><em>Push-to-talk dictation with AI cleanup — 100% local, on macOS and Windows.</em></p>
 
 > Monorepo: `macos/` (shipping app) · `windows/` (in development) · `shared/` (canonical prompts + model manifest) · `evals/` (the quality gate every platform must pass) · `docs/`
 

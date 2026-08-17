@@ -4,6 +4,7 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>net8.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
+    <ApplicationIcon>Assets\app.ico</ApplicationIcon>
     <!-- WinForms is used only for the NotifyIcon system-tray API (more reliable
          than third-party WPF tray packages). -->
     <UseWindowsForms>true</UseWindowsForms>
