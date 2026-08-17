@@ -75,14 +75,6 @@ public sealed class AudioRecorder
             enumerator.Dispose();
         }
 
-        var cap = new WasapiCapture(device);
-        WaveFormat format = cap.WaveFormat;
-        if (format.SampleRate <= 0 || format.Channels <= 0)
-        {
-            cap.Dispose();
-            throw new InvalidOperationException("No usable input device (invalid capture format).");
-        }
-
         int currentSession;
         lock (sync)
         {
@@ -94,14 +86,78 @@ public sealed class AudioRecorder
             lastSourceSample = 0;
         }
 
-        cap.DataAvailable += (_, e) => OnDataAvailable(e, format, currentSession);
-        cap.RecordingStopped += (_, _) => { /* disposal handled in Stop() */ };
-        cap.StartRecording();
-
-        lock (sync)
+        // Polled mode first: NAudio's default event-driven WASAPI capture is
+        // known to fail with 0x80070490 ("Element not found") on some driver
+        // stacks at StartRecording. Polling sidesteps that; event-sync stays
+        // as the fallback for devices where polling misbehaves instead.
+        Exception? firstError = null;
+        foreach (bool useEventSync in new[] { false, true })
         {
-            capture = cap;
-            recording = true;
+            var cap = new WasapiCapture(device, useEventSync, 100);
+            WaveFormat format = cap.WaveFormat;
+            if (format.SampleRate <= 0 || format.Channels <= 0)
+            {
+                cap.Dispose();
+                throw new InvalidOperationException("No usable input device (invalid capture format).");
+            }
+            cap.DataAvailable += (_, e) => OnDataAvailable(e, format, currentSession);
+            cap.RecordingStopped += (_, _) => { /* disposal handled in Stop() */ };
+            try
+            {
+                cap.StartRecording();
+                lock (sync)
+                {
+                    capture = cap;
+                    recording = true;
+                }
+                if (useEventSync) Log.D("recorder: polled mode failed, event-sync succeeded");
+                return;
+            }
+            catch (Exception ex)
+            {
+                firstError ??= ex;
+                Log.D($"recorder: StartRecording failed (eventSync={useEventSync}): {ex.Message}");
+                try { cap.Dispose(); } catch { }
+            }
+        }
+
+        LogDeviceInventory();
+        throw new InvalidOperationException(
+            "Could not start the microphone. If this is a permissions issue, check " +
+            "Settings > Privacy & security > Microphone > 'Let desktop apps access your microphone'. " +
+            $"Underlying error: {firstError?.Message}", firstError);
+    }
+
+    /// <summary>Writes the capture-device inventory to the log so field
+    /// failures are diagnosable from app.log alone.</summary>
+    private static void LogDeviceInventory()
+    {
+        try
+        {
+            using var enumerator = new MMDeviceEnumerator();
+            var devices = enumerator.EnumerateAudioEndPoints(DataFlow.Capture, DeviceState.All);
+            Log.D($"recorder: capture device inventory ({devices.Count} found):");
+            foreach (var d in devices)
+            {
+                string state;
+                try { state = d.State.ToString(); } catch { state = "?"; }
+                string name;
+                try { name = d.FriendlyName; } catch { name = d.ID; }
+                Log.D($"  [{state}] {name}");
+            }
+            try
+            {
+                var def = enumerator.GetDefaultAudioEndpoint(DataFlow.Capture, Role.Console);
+                Log.D($"  default: {def.FriendlyName}");
+            }
+            catch (Exception ex)
+            {
+                Log.D($"  default: NONE ({ex.Message})");
+            }
+        }
+        catch (Exception ex)
+        {
+            Log.D("recorder: device inventory failed: " + ex.Message);
         }
     }
 
