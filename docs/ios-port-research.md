@@ -1,5 +1,8 @@
 # Porting Private Whisper to iOS — Research Report
 
+> **Superseded (2026-09-27):** the keyboard-extension conclusions below are outdated — see [ios-port-research-v2.md](ios-port-research-v2.md) (one bounce per session, then in-place dictation; iOS 27 background-inference entitlement; MIT reference implementations).
+
+
 *Researched 2026-07-13. Target: iPhone 15 Pro class and newer (A17 Pro+, 8 GB RAM), iOS 26. Owner: Simon (EN/DE/Swiss German/FR), Mac Mini M4 16 GB as always-on home server.*
 
 ---
