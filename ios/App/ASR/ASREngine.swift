@@ -32,8 +32,13 @@ final class ASREngine {
     }
     enum ASRError: LocalizedError {
         case notInstalled(String)
+        case incomplete(String, [String])
         var errorDescription: String? {
-            switch self { case .notInstalled(let v): return "Speech model \(ModelCatalog.displayName(v)) is not installed." }
+            switch self {
+            case .notInstalled(let v): return "Speech model \(ModelCatalog.displayName(v)) is not installed."
+            case .incomplete(let v, let missing):
+                return "The download of \(ModelCatalog.displayName(v)) is incomplete (\(missing.count) files missing). Retry on Wi-Fi."
+            }
         }
     }
 
@@ -51,10 +56,25 @@ final class ASREngine {
     static func folder(_ variant: String) -> URL {
         base.appendingPathComponent("models/argmaxinc/whisperkit-coreml/\(variant)", isDirectory: true)
     }
-    static func isInstalled(_ variant: String) -> Bool {
-        ["AudioEncoder.mlmodelc/weights/weight.bin", "TextDecoder.mlmodelc/weights/weight.bin",
-         "MelSpectrogram.mlmodelc", "config.json"]
-            .allSatisfy { FileManager.default.fileExists(atPath: folder(variant).appendingPathComponent($0).path) }
+    static func isInstalled(_ variant: String) -> Bool { missingFiles(variant).isEmpty }
+
+    /// Every file Core ML needs, per compiled model. Checking only the big weights let a half-finished
+    /// download pass as "installed" (field bug, 2026-10-01: weights present, model.mil/coremldata.bin missing).
+    static func missingFiles(_ variant: String) -> [String] {
+        let fm = FileManager.default
+        let root = folder(variant)
+        func exists(_ rel: String) -> Bool { fm.fileExists(atPath: root.appendingPathComponent(rel).path) }
+        var missing: [String] = []
+        for f in ["config.json", "generation_config.json"] where !exists(f) { missing.append(f) }
+        for m in ["MelSpectrogram", "AudioEncoder", "TextDecoder"] {
+            let dir = "\(m).mlmodelc"
+            for f in ["coremldata.bin", "metadata.json"] where !exists("\(dir)/\(f)") { missing.append("\(dir)/\(f)") }
+            if !exists("\(dir)/model.mil") && !exists("\(dir)/model.espresso.net") { missing.append("\(dir)/model.mil") }
+            if !exists("\(dir)/weights/weight.bin") && !exists("\(dir)/model.espresso.weights") {
+                missing.append("\(dir)/weights/weight.bin")
+            }
+        }
+        return missing
     }
     /// Mel on the CPU (0.4 MB; removes the only GPU model path, #268). Encoder/decoder on the ANE, or all CPU.
     static func compute(cpuOnly: Bool) -> ModelComputeOptions {
@@ -83,12 +103,30 @@ final class ASREngine {
 
     func download(variant: String, progress: @escaping @Sendable (Double) -> Void) async throws {
         ModelWarmth.clear(variant)
-        let url = try await WhisperKit.download(variant: variant, downloadBase: Self.base, useBackgroundSession: true) {
-            progress($0.fractionCompleted)
+        // Foreground session: onboarding keeps the app open, and the background session left a partial model
+        // marked as done (field bug). Already-complete files are skipped by the hub cache on each attempt.
+        var lastError: Error?
+        for attempt in 1...3 {
+            do {
+                let url = try await WhisperKit.download(variant: variant, downloadBase: Self.base,
+                                                        useBackgroundSession: false) {
+                    progress($0.fractionCompleted)
+                }
+                if url.standardizedFileURL != Self.folder(variant).standardizedFileURL {
+                    Log.error("asr", "download landed at \(url.path)")
+                }
+            } catch {
+                lastError = error
+                Log.error("asr", "download attempt \(attempt) failed: \(Self.describe(error).prefix(200))")
+            }
+            let missing = Self.missingFiles(variant)
+            if missing.isEmpty {
+                Log.info("asr", "download \(variant) verified complete (attempt \(attempt))")
+                return
+            }
+            Log.error("asr", "download attempt \(attempt) incomplete, missing: \(missing.joined(separator: ", "))")
         }
-        if url.standardizedFileURL != Self.folder(variant).standardizedFileURL {
-            Log.error("asr", "download landed at \(url.path)")
-        }
+        throw lastError ?? ASRError.incomplete(variant, Self.missingFiles(variant))
     }
 
     /// Coalesced: all callers await one load, so two Core ML compiles never overlap (E5 bundle crash).

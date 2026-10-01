@@ -110,8 +110,10 @@ final class ModelSetup: ObservableObject {
         phase = .downloading(0)
         setState(.downloading)
         d.set(0.0, forKey: Keys.modelProgress)
-        Log.info("model", "download \(v) start")
+        Log.info("model", "download \(v) start (missing before: \(ASREngine.missingFiles(v).count) files)")
         let started = Date()
+        UIApplication.shared.isIdleTimerDisabled = true
+        defer { UIApplication.shared.isIdleTimerDisabled = false }
         do {
             try await asr.download(variant: v) { p in
                 Task { @MainActor in ModelSetup.shared.progress(p) }

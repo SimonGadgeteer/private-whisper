@@ -17,8 +17,15 @@ enum Log {
     private static let queue = DispatchQueue(label: "pw.log", qos: .utility)
     private static let maxBytes = 1_000_000
 
-    static var fileURL: URL? { AppGroup.containerURL?.appendingPathComponent("pw.log") }
-    static var rotatedURL: URL? { AppGroup.containerURL?.appendingPathComponent("pw.1.log") }
+    /// Under Library/Logs so `xcrun devicectl device copy from --domain-type appGroupDataContainer` can fetch it
+    /// (it only allows Library, Documents and tmp).
+    static var directory: URL? = {
+        guard let d = AppGroup.containerURL?.appendingPathComponent("Library/Logs", isDirectory: true) else { return nil }
+        try? FileManager.default.createDirectory(at: d, withIntermediateDirectories: true)
+        return d
+    }()
+    static var fileURL: URL? { directory?.appendingPathComponent("pw.log") }
+    static var rotatedURL: URL? { directory?.appendingPathComponent("pw.1.log") }
 
     static func info(_ category: String, _ message: String) { write("I", category, message) }
     static func error(_ category: String, _ message: String) { write("E", category, message) }
