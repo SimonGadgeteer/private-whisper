@@ -1,0 +1,145 @@
+# ios/project.yml — Private Whisper (iPhone). Regenerate after every edit: cd ios && xcodegen generate
+# Info.plist and .entitlements files below are GENERATED from `info:` / `entitlements:` — edit here, never by hand.
+# Xcode's Signing & Capabilities UI: only the one-time App Groups tick in M0 (§11); confirm the .entitlements
+# files are unchanged, then regenerate.
+# Portions of this configuration follow Dictus (https://github.com/getdictus/dictus-ios), MIT, (c) 2026 PIVI Solutions.
+# FREE Personal Team: do not add paid-only capabilities (Push, iCloud, Siri, Increased Memory Limit,
+# Extended Virtual Addressing, Background Inference) — automatic signing fails for the whole project.
+
+name: PrivateWhisper
+
+options:
+  bundleIdPrefix: ch.simonschwarz
+  deploymentTarget:
+    iOS: "26.0"
+  createIntermediateGroups: true
+  developmentLanguage: en
+  groupSortPosition: top
+
+settings:
+  base:
+    # DEVELOPMENT_TEAM is passed at build time (scripts/deploy.sh reads it from ios/.team or $PW_TEAM)
+    CODE_SIGN_STYLE: Automatic
+    IPHONEOS_DEPLOYMENT_TARGET: "26.0"
+    TARGETED_DEVICE_FAMILY: "1"
+    SUPPORTS_MACCATALYST: NO
+    SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD: NO
+    SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD: NO
+    MARKETING_VERSION: "0.1.0"          # one version for app + extension
+    CURRENT_PROJECT_VERSION: "1"
+    SWIFT_VERSION: "5.0"
+    SWIFT_STRICT_CONCURRENCY: minimal
+    SWIFT_DEFAULT_ACTOR_ISOLATION: nonisolated
+    CLANG_ENABLE_MODULES: YES
+
+packages:
+  ArgmaxOSS:
+    url: https://github.com/argmaxinc/argmax-oss-swift
+    exactVersion: 1.1.0
+
+targets:
+
+  PrivateWhisper:
+    type: application
+    platform: iOS
+    sources:
+      - path: App
+      - path: Shared
+    dependencies:
+      - package: ArgmaxOSS
+        product: WhisperKit                  # ONLY the app links WhisperKit
+      - target: PrivateWhisperKeyboard       # embedded into PlugIns/
+    info:
+      path: App/Info.plist
+      properties:
+        CFBundleDisplayName: Private Whisper
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        LSRequiresIPhoneOS: true
+        UILaunchScreen: {}
+        UIApplicationSceneManifest:
+          UIApplicationSupportsMultipleScenes: false
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+        UIBackgroundModes:                   # plist key, not an entitlement: free-team OK
+          - audio
+        NSMicrophoneUsageDescription: Private Whisper records your voice while you dictate. Audio is transcribed on this iPhone and never leaves it.
+        CFBundleURLTypes:
+          - CFBundleURLName: ch.simonschwarz.privatewhisper.ios
+            CFBundleURLSchemes:
+              - pwhisper
+        ITSAppUsesNonExemptEncryption: false
+    entitlements:
+      path: App/PrivateWhisper.entitlements
+      properties:
+        com.apple.security.application-groups:
+          - group.ch.simonschwarz.privatewhisper.ios
+        # PAID TEAM ONLY — do not enable on a free Personal Team:
+        # com.apple.developer.background-tasks.continued-processing.inference: true
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: ch.simonschwarz.privatewhisper.ios
+        TARGETED_DEVICE_FAMILY: "1"                  # target level: XcodeGen's iOS preset would otherwise set "1,2"
+        SWIFT_OBJC_BRIDGING_HEADER: App/PrivateWhisper-Bridging-Header.h
+        # ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon   # once App/Assets.xcassets exists
+
+  PrivateWhisperKeyboard:
+    type: app-extension
+    platform: iOS
+    sources:
+      - path: Keyboard
+      - path: Shared
+      - path: ../shared/prompts/cleanup_prompt.txt   # same prompt as macOS/Windows, bundled as a resource
+        buildPhase: resources
+    info:
+      path: Keyboard/Info.plist
+      properties:
+        CFBundleDisplayName: Private Whisper         # name in Settings › Keyboards
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.keyboard-service
+          NSExtensionPrincipalClass: $(PRODUCT_MODULE_NAME).KeyboardViewController
+          NSExtensionAttributes:
+            RequestsOpenAccess: true                 # App Group writes + opening the app (required since iOS 26)
+            IsASCIICapable: true
+            PrefersRightToLeft: false
+            PrimaryLanguage: de-CH
+    entitlements:
+      path: Keyboard/PrivateWhisperKeyboard.entitlements
+      properties:
+        com.apple.security.application-groups:
+          - group.ch.simonschwarz.privatewhisper.ios
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: ch.simonschwarz.privatewhisper.ios.keyboard
+        TARGETED_DEVICE_FAMILY: "1"
+        APPLICATION_EXTENSION_API_ONLY: YES          # FoundationModels links fine under it (Dictus #357)
+        SKIP_INSTALL: YES
+        ENABLE_DEBUG_DYLIB: NO                       # keeps Debug memory readings honest
+        SWIFT_OBJC_BRIDGING_HEADER: Keyboard/Keyboard-Bridging-Header.h
+
+schemes:
+  PrivateWhisper:
+    build:
+      targets:
+        PrivateWhisper: all
+        PrivateWhisperKeyboard: all
+    run:
+      config: Debug
+    profile:
+      config: Release
+    archive:
+      config: Release
+  PrivateWhisperKeyboard:                            # Run → pick Notes/Messages → debugger attaches to the appex
+    build:
+      targets:
+        PrivateWhisperKeyboard: all
+        PrivateWhisper: all
+    run:
+      config: Debug
+      askForAppToLaunch: true
+      launchAutomaticallySubstyle: "2"
+    profile:
+      config: Release
+      askForAppToLaunch: true
