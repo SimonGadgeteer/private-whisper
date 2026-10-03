@@ -45,9 +45,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         statusItem.onOpenSettings = { [weak self] in self?.showMainWindow() }
         statusItem.onOpenMainWindow = { [weak self] in self?.showMainWindow() }
 
-        hotkey = HotkeyMonitor(choice: configStore.config.hotkey)
+        hotkey = HotkeyMonitor(choice: configStore.config.hotkey, holdDelay: holdDelay(configStore.config))
         hotkey.onPress = { [weak self] in self?.pipeline.hotkeyPressed() }
         hotkey.onRelease = { [weak self] in self?.pipeline.hotkeyReleased() }
+        hotkey.onCancel = { [weak self] in self?.pipeline.hotkeyCancelled() }
         installCommandMonitor()
 
         Task { await self.requestPermissionsAndStart() }
@@ -90,6 +91,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                 hotkey.choice = config.hotkey
                 hotkey.start() // reinstall with new key
             }
+            hotkey.holdDelay = holdDelay(config)
+            commandHotkey?.holdDelay = holdDelay(config)
             if commandHotkey?.choice != config.commandHotkey {
                 installCommandMonitor()
             }
@@ -101,11 +104,16 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         commandHotkey = nil
         guard let choice = configStore.config.commandHotkey,
               choice != configStore.config.hotkey else { return }
-        let monitor = HotkeyMonitor(choice: choice)
+        let monitor = HotkeyMonitor(choice: choice, holdDelay: holdDelay(configStore.config))
         monitor.onPress = { [weak self] in self?.pipeline.commandPressed() }
         monitor.onRelease = { [weak self] in self?.pipeline.commandReleased() }
+        monitor.onCancel = { [weak self] in self?.pipeline.commandCancelled() }
         monitor.start()
         commandHotkey = monitor
+    }
+
+    private func holdDelay(_ config: AppConfig) -> TimeInterval {
+        TimeInterval(max(0, min(config.hotkeyHoldDelayMs, 1000))) / 1000
     }
 
     func applicationWillTerminate(_ notification: Notification) {

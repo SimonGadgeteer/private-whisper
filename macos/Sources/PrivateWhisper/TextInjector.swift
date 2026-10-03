@@ -117,6 +117,8 @@ enum TextInjector {
         else { return }
         down.flags = .maskCommand
         up.flags = .maskCommand
+        SyntheticKeys.tag(down)
+        SyntheticKeys.tag(up)
         down.post(tap: .cghidEventTap)
         up.post(tap: .cghidEventTap)
     }

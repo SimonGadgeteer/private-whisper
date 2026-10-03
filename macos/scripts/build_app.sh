@@ -7,7 +7,6 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 PROJECT_DIR="$PWD"
 APP_NAME="PrivateWhisper"
-BUILD_DIR="$PROJECT_DIR/.build/arm64-apple-macosx/release"
 APP_DIR="$PROJECT_DIR/build/$APP_NAME.app"
 # Auto-detect a codesigning identity; override with SIGN_IDENTITY=... .
 # Falls back to ad-hoc signing ("-") — works locally, but TCC grants then
@@ -17,6 +16,10 @@ SIGN_IDENTITY="${SIGN_IDENTITY:--}"
 
 echo "==> swift build -c release"
 swift build -c release --arch arm64
+# Ask SwiftPM where it put the product: Xcode 27's build system writes to .build/out/Products/Release,
+# older toolchains to .build/arm64-apple-macosx/release — a hard-coded path silently ships a stale binary.
+BUILD_DIR="$(swift build -c release --arch arm64 --show-bin-path)"
+echo "    binary: $BUILD_DIR/$APP_NAME ($(stat -f %Sm "$BUILD_DIR/$APP_NAME"))"
 
 echo "==> Assembling $APP_DIR"
 rm -rf "$APP_DIR"

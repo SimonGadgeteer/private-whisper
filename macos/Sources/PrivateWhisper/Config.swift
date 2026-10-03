@@ -49,6 +49,8 @@ struct AppConfig: Codable, Equatable {
     /// Experimental: diff the target field after injection and suggest
     /// dictionary terms from the user's manual respellings.
     var correctionLearningEnabled: Bool = true
+    /// Push-to-talk keys must be held this long (with no other key) before recording starts.
+    var hotkeyHoldDelayMs: Int = 250
 
     static let defaultAppTones: [String: String] = [
         "com.apple.mail": "formal email register",
@@ -111,6 +113,7 @@ struct AppConfig: Codable, Equatable {
         appTones = try c.decodeIfPresent([String: String].self, forKey: .appTones) ?? defaults.appTones
         commandHotkey = try c.decodeIfPresent(HotkeyChoice.self, forKey: .commandHotkey) ?? defaults.commandHotkey
         correctionLearningEnabled = try c.decodeIfPresent(Bool.self, forKey: .correctionLearningEnabled) ?? defaults.correctionLearningEnabled
+        hotkeyHoldDelayMs = try c.decodeIfPresent(Int.self, forKey: .hotkeyHoldDelayMs) ?? defaults.hotkeyHoldDelayMs
     }
 
     init() {}

@@ -1,34 +1,43 @@
 import AppKit
 
-/// Push-to-talk detection for a single modifier key using NSEvent flagsChanged
-/// monitors (global + local). Requires Accessibility permission for the global
-/// monitor to receive events.
+/// Push-to-talk on a single modifier key. Recording starts only after the key has been held for
+/// `holdDelay` with nothing else pressed; any other key or mouse button while it is held means the
+/// user is typing a combination (Option+G is "@" on Swiss layouts), see HoldGesture.
+/// Requires Accessibility permission for the global monitors.
 final class HotkeyMonitor {
     var onPress: (() -> Void)?
     var onRelease: (() -> Void)?
+    /// The key turned out to be part of a combination after recording had started: discard it.
+    var onCancel: (() -> Void)?
 
     var choice: HotkeyChoice
+    var holdDelay: TimeInterval
 
+    private var gesture = HoldGesture()
+    private var activation: DispatchWorkItem?
     private var monitors: [Any] = []
-    private(set) var isDown = false
 
-    init(choice: HotkeyChoice) {
+    var isDown: Bool { gesture.phase != .up }
+
+    init(choice: HotkeyChoice, holdDelay: TimeInterval) {
         self.choice = choice
+        self.holdDelay = holdDelay
     }
 
     func start() {
         stop()
-        let global = NSEvent.addGlobalMonitorForEvents(matching: .flagsChanged, handler: { [weak self] event in
+        let mask: NSEvent.EventTypeMask = [.flagsChanged, .keyDown, .leftMouseDown, .rightMouseDown, .otherMouseDown]
+        let global = NSEvent.addGlobalMonitorForEvents(matching: mask) { [weak self] event in
             self?.handle(event)
-        })
+        }
         if let global { monitors.append(global) }
-        if let local = NSEvent.addLocalMonitorForEvents(matching: .flagsChanged, handler: { [weak self] event in
+        if let local = NSEvent.addLocalMonitorForEvents(matching: mask, handler: { [weak self] event in
             self?.handle(event)
             return event
         }) {
             monitors.append(local)
         }
-        dlog("HotkeyMonitor started: choice=\(choice.rawValue) globalMonitor=\(global != nil)")
+        dlog("HotkeyMonitor started: choice=\(choice.rawValue) holdDelay=\(Int(holdDelay * 1000))ms globalMonitor=\(global != nil)")
     }
 
     func stop() {
@@ -36,26 +45,65 @@ final class HotkeyMonitor {
         monitors.removeAll()
         // Keep the press/release pairing intact if the key is held during a
         // hotkey change: fire the release so a recording never gets stuck.
-        if isDown {
-            isDown = false
-            onRelease?()
-        }
+        perform(gesture.keyUp())
     }
 
     private func handle(_ event: NSEvent) {
-        if ProcessInfo.processInfo.environment["LD_DEBUG"] != nil {
-            dlog("flagsChanged keyCode=\(event.keyCode) rawFlags=\(String(event.modifierFlags.rawValue, radix: 16))")
+        switch event.type {
+        case .flagsChanged:
+            if event.keyCode == choice.keyCode {
+                perform(isChosenKeyDown(in: event) ? gesture.keyDown() : gesture.keyUp())
+            } else if isAnyModifierDown(event) {
+                perform(gesture.otherInput(modifierOnly: true))
+            }
+        case .keyDown:
+            // Our own Cmd+C / Cmd+V must not count as the user typing a combination.
+            guard !SyntheticKeys.isOwn(event.cgEvent) else { return }
+            perform(gesture.otherInput(modifierOnly: false))
+        default:                                     // mouse button: Option-click, Option-drag
+            perform(gesture.otherInput(modifierOnly: false))
         }
-        guard event.keyCode == choice.keyCode else { return }
-        let down = isChosenKeyDown(in: event)
-        dlog("Hotkey \(choice.rawValue) transition: down=\(down) (was \(isDown))")
-        if down && !isDown {
-            isDown = true
+    }
+
+    private func perform(_ action: HoldGesture.Action) {
+        switch action {
+        case .none:
+            return
+        case .scheduleActivation:
+            activation?.cancel()
+            guard holdDelay > 0 else { perform(gesture.holdDelayElapsed()); return }
+            let work = DispatchWorkItem { [weak self] in
+                guard let self else { return }
+                self.perform(self.gesture.holdDelayElapsed())
+            }
+            activation = work
+            DispatchQueue.main.asyncAfter(deadline: .now() + holdDelay, execute: work)
+        case .cancelScheduled:
+            activation?.cancel()
+            activation = nil
+            if gesture.phase == .combination { dlog("Hotkey \(choice.rawValue): key combination, not dictation") }
+        case .start:
+            activation = nil
             onPress?()
-        } else if !down && isDown {
-            isDown = false
+        case .stop:
             onRelease?()
+        case .cancel:
+            dlog("Hotkey \(choice.rawValue): key combination during recording, discarding")
+            onCancel?()
         }
+    }
+
+    /// Another modifier went down (not up) while ours is held.
+    private func isAnyModifierDown(_ event: NSEvent) -> Bool {
+        let flags = event.modifierFlags.intersection(.deviceIndependentFlagsMask)
+        let ours: NSEvent.ModifierFlags = {
+            switch choice {
+            case .leftOption, .rightOption: return .option
+            case .rightCommand: return .command
+            case .fnKey: return .function
+            }
+        }()
+        return !flags.subtracting([ours, .capsLock, .numericPad, .function]).isEmpty
     }
 
     /// Uses the device-dependent flag bits so left/right variants of the same

@@ -31,6 +31,21 @@ struct SettingsView: View {
                         Text(choice.label).tag(choice.rawValue)
                     }
                 }
+                VStack(alignment: .leading, spacing: 4) {
+                    HStack {
+                        Text("Hold before recording")
+                        Slider(value: Binding(
+                            get: { Double(configStore.config.hotkeyHoldDelayMs) },
+                            set: { configStore.config.hotkeyHoldDelayMs = Int($0) }
+                        ), in: 0...800, step: 50)
+                        Text("\(configStore.config.hotkeyHoldDelayMs) ms")
+                            .monospacedDigit()
+                            .frame(width: 56, alignment: .trailing)
+                    }
+                    Text("Quick taps and key combinations (e.g. Option+G for @) never start a recording.")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
                 Picker("Microphone", selection: Binding(
                     get: { configStore.config.microphoneUID ?? "" },
                     set: { configStore.config.microphoneUID = $0.isEmpty ? nil : $0 }

@@ -23,6 +23,8 @@ final class PipelineController {
         case command(selection: String)
     }
     private var sessionKind: SessionKind = .dictation(toneHint: nil)
+    private var commandPressID = 0
+    private var commandKeyHeld = false
 
     /// Live mic RMS while recording, delivered on the main thread.
     var onAudioLevel: ((Float) -> Void)?
@@ -114,26 +116,46 @@ final class PipelineController {
         finishRecording()
     }
 
+    /// The push-to-talk key was part of a key combination (e.g. Option+G for "@"): drop the audio.
+    func hotkeyCancelled() {
+        discardRecording(reason: "key combination")
+    }
+
     // MARK: - Command mode
 
     func commandPressed() {
         guard configStore.config.commandHotkey != nil, canStartSession() else { return }
+        commandPressID += 1
+        let pressID = commandPressID
+        commandKeyHeld = true
         Task {
             guard let selection = await SelectionCapture.selectedText() else {
                 hud.flash("Command mode: select some text first", seconds: 2)
                 return
             }
-            // Re-check: the async selection capture takes ~100ms and the user
-            // may have released the key already — HotkeyMonitor still fires
-            // onRelease, which no-ops if we never started recording.
-            guard canStartSession() else { return }
+            // The selection capture takes ~100 ms: if the key was released or turned out to be a
+            // key combination meanwhile, starting now would leave the mic running with no release.
+            guard commandKeyHeld, pressID == commandPressID, canStartSession() else { return }
             sessionKind = .command(selection: selection)
             startRecording()
         }
     }
 
     func commandReleased() {
+        commandKeyHeld = false
         finishRecording()
+    }
+
+    func commandCancelled() {
+        commandKeyHeld = false
+        discardRecording(reason: "key combination")
+    }
+
+    private func discardRecording(reason: String) {
+        guard recorder.isRecording else { return }
+        let samples = recorder.stop()
+        statusItem.setState(.idle)
+        dlog(String(format: "Recording discarded (%@): %.2fs audio", reason, Double(samples.count) / 16000.0))
     }
 
     // MARK: - Shared pipeline
@@ -144,12 +166,13 @@ final class PipelineController {
         guard recorder.isRecording else { return }
         let samples = recorder.stop()
         let audioSeconds = Double(samples.count) / 16000.0
-        dlog(String(format: "Recording stopped: %.2fs audio, rms=%.4f", audioSeconds, samples.rmsLevel))
+        let voiced = VoiceActivity.voicedSeconds(samples)
+        dlog(String(format: "Recording stopped: %.2fs audio, %.2fs voiced, rms=%.4f", audioSeconds, voiced, samples.rmsLevel))
 
-        // PRD §7.4: discard empty/near-silent recordings.
-        guard AudioGate.passes(samples) else {
+        // PRD §7.4: discard recordings without speech — silently, no popup (accidental presses).
+        guard voiced >= VoiceActivity.minVoicedSeconds else {
             statusItem.setState(.idle)
-            hud.flash("Nothing heard")
+            dlog("Discarded: no speech")
             return
         }
 
@@ -165,9 +188,10 @@ final class PipelineController {
                     samples: samples, vocabulary: config.dictionary)
                 let transcriptionSeconds = Date().timeIntervalSince(tStart)
 
-                guard !result.text.isEmpty else {
+                // Whisper echoes its prompt (the dictionary) on clips without real speech.
+                guard !result.text.isEmpty, !PromptEcho.isEcho(result.text, vocabulary: config.dictionary) else {
                     statusItem.setState(.idle)
-                    hud.flash("Nothing heard")
+                    dlog(result.text.isEmpty ? "Discarded: empty transcript" : "Discarded: transcript only repeated dictionary words")
                     return
                 }
 

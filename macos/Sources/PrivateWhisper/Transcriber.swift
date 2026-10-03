@@ -5,11 +5,8 @@ import whisper
 /// Whisper hallucinates ("you", "Thank you.") on silence, and its
 /// no_speech_prob is unreliable there — energy gating is the real defense.
 enum AudioGate {
-    static let minSeconds = 0.5
-    static let minRMS: Float = 0.002
-
     static func passes(_ samples: [Float]) -> Bool {
-        Double(samples.count) / 16000.0 >= minSeconds && samples.rmsLevel > minRMS
+        VoiceActivity.voicedSeconds(samples) >= VoiceActivity.minVoicedSeconds
     }
 }
 
