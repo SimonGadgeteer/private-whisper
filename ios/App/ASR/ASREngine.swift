@@ -391,6 +391,11 @@ final class ASREngine {
             }
             var text = parts.joined(separator: " ").trimmingCharacters(in: .whitespacesAndNewlines)
             if Self.isSilenceHallucination(text) { text = "" }
+            // Whisper echoes its prompt (the dictionary) on clips without real speech.
+            if Settings.vocabularyBias, Self.isPromptEcho(text, dictionary) {
+                Log.info("asr", "discarded: transcript only repeated dictionary words")
+                text = ""
+            }
             return (text, code)
         }
     }
@@ -427,6 +432,17 @@ final class ASREngine {
 
     private static let silencePhrases = ["untertitel im auftrag des zdf", "untertitel der amara.org-community",
         "sous-titres realises par la communaute d'amara.org", "thank you for watching", "vielen dank furs zuschauen"]
+    /// True when the transcript is made only of dictionary words and contains at least two distinct
+    /// dictionary terms (same rule as the macOS and Windows PromptEcho). A single dictated name passes.
+    static func isPromptEcho(_ text: String, _ dictionary: [String]) -> Bool {
+        func tokens(_ s: String) -> [String] { s.lowercased().split { !($0.isLetter || $0.isNumber) }.map(String.init) }
+        let words = tokens(text)
+        let vocabulary = Set(dictionary.flatMap(tokens))
+        guard !words.isEmpty, !vocabulary.isEmpty, words.allSatisfy(vocabulary.contains) else { return false }
+        let present = Set(words)
+        return dictionary.filter { let t = tokens($0); return !t.isEmpty && t.allSatisfy(present.contains) }.count >= 2
+    }
+
     static func isSilenceHallucination(_ t: String) -> Bool {
         let f = t.folding(options: [.diacriticInsensitive, .caseInsensitive], locale: nil)
             .trimmingCharacters(in: CharacterSet.punctuationCharacters.union(.whitespaces))

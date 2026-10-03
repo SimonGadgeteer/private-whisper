@@ -28,17 +28,30 @@ public sealed class HotkeyHook : IDisposable
     private uint dictationVk = NativeMethods.VK_RMENU;
     private uint? commandVk = NativeMethods.VK_RCONTROL;
 
-    private bool dictationDown;
-    private bool commandDown;
+    // Hold delay + key-combination detection per key (see HoldGesture): AltGr is Right Alt, and
+    // AltGr+2 is "@" on Swiss/German layouts.
+    private readonly HoldGesture dictation = new();
+    private readonly HoldGesture command = new();
+    private readonly DispatcherTimer dictationTimer;
+    private readonly DispatcherTimer commandTimer;
+
+    /// <summary>How long a push-to-talk key must be held, with nothing else pressed, before recording starts.</summary>
+    public TimeSpan HoldDelay { get; set; } = TimeSpan.FromMilliseconds(250);
 
     public event Action? DictationPressed;
     public event Action? DictationReleased;
+    public event Action? DictationCancelled;
     public event Action? CommandPressed;
     public event Action? CommandReleased;
+    public event Action? CommandCancelled;
 
     public HotkeyHook()
     {
         dispatcher = Application.Current?.Dispatcher ?? Dispatcher.CurrentDispatcher;
+        dictationTimer = new DispatcherTimer(DispatcherPriority.Normal, dispatcher);
+        dictationTimer.Tick += (_, _) => { dictationTimer.Stop(); Apply(dictation, dictation.HoldDelayElapsed(), isCommand: false); };
+        commandTimer = new DispatcherTimer(DispatcherPriority.Normal, dispatcher);
+        commandTimer.Tick += (_, _) => { commandTimer.Stop(); Apply(command, command.HoldDelayElapsed(), isCommand: true); };
     }
 
     public void Start(uint dictationKey, uint? commandKey)
@@ -64,18 +77,15 @@ public sealed class HotkeyHook : IDisposable
     /// the change, its release is fired so a recording never gets stuck.</summary>
     public void UpdateKeys(uint dictationKey, uint? commandKey)
     {
-        if (dictationDown)
-        {
-            dictationDown = false;
-            Dispatch(DictationReleased);
-        }
-        if (commandDown)
-        {
-            commandDown = false;
-            Dispatch(CommandReleased);
-        }
+        ReleaseAll();
         dictationVk = dictationKey;
         commandVk = commandKey;
+    }
+
+    private void ReleaseAll()
+    {
+        Apply(dictation, dictation.KeyUp(), isCommand: false);
+        Apply(command, command.KeyUp(), isCommand: true);
     }
 
     public void Stop()
@@ -86,16 +96,7 @@ public sealed class HotkeyHook : IDisposable
             hookHandle = IntPtr.Zero;
         }
         hookProc = null;
-        if (dictationDown)
-        {
-            dictationDown = false;
-            Dispatch(DictationReleased);
-        }
-        if (commandDown)
-        {
-            commandDown = false;
-            Dispatch(CommandReleased);
-        }
+        ReleaseAll();
     }
 
     public void Dispose() => Stop();
@@ -114,35 +115,64 @@ public sealed class HotkeyHook : IDisposable
 
                 if (data.vkCode == dictationVk)
                 {
-                    // Key-repeat sends additional key-downs while held; the
-                    // isDown/state check makes press fire exactly once.
-                    if (isDown && !dictationDown)
-                    {
-                        dictationDown = true;
-                        Dispatch(DictationPressed);
-                    }
-                    else if (isUp && dictationDown)
-                    {
-                        dictationDown = false;
-                        Dispatch(DictationReleased);
-                    }
+                    if (isDown) Apply(dictation, dictation.KeyDown(), isCommand: false);
+                    else if (isUp) Apply(dictation, dictation.KeyUp(), isCommand: false);
                 }
                 else if (commandVk.HasValue && data.vkCode == commandVk.Value)
                 {
-                    if (isDown && !commandDown)
-                    {
-                        commandDown = true;
-                        Dispatch(CommandPressed);
-                    }
-                    else if (isUp && commandDown)
-                    {
-                        commandDown = false;
-                        Dispatch(CommandReleased);
-                    }
+                    if (isDown) Apply(command, command.KeyDown(), isCommand: true);
+                    else if (isUp) Apply(command, command.KeyUp(), isCommand: true);
+                }
+                else if (isDown && !IsAltGrFakeControl(data))
+                {
+                    bool modifierOnly = IsModifier(data.vkCode);
+                    Apply(dictation, dictation.OtherInput(modifierOnly), isCommand: false);
+                    Apply(command, command.OtherInput(modifierOnly), isCommand: true);
                 }
             }
         }
         return NativeMethods.CallNextHookEx(hookHandle, nCode, wParam, lParam);
+    }
+
+    /// <summary>AltGr makes Windows inject a fake Left Ctrl (scan code 0x21D) before each Right Alt
+    /// key-down, including key repeat; it is not the user pressing another key.</summary>
+    private static bool IsAltGrFakeControl(NativeMethods.KBDLLHOOKSTRUCT data) =>
+        data.vkCode == NativeMethods.VK_LCONTROL && data.scanCode == 0x21D;
+
+    private static bool IsModifier(uint vk) =>
+        vk is 0x10 or 0x11 or 0x12 or 0x14 or (>= 0xA0 and <= 0xA5) or 0x5B or 0x5C;  // Shift/Ctrl/Alt/Caps/Win
+
+    private void Apply(HoldGesture gesture, HoldGesture.Action action, bool isCommand)
+    {
+        DispatcherTimer timer = isCommand ? commandTimer : dictationTimer;
+        switch (action)
+        {
+            case HoldGesture.Action.ScheduleActivation:
+                if (HoldDelay <= TimeSpan.Zero)
+                {
+                    Apply(gesture, gesture.HoldDelayElapsed(), isCommand);
+                    return;
+                }
+                timer.Stop();
+                timer.Interval = HoldDelay;
+                timer.Start();
+                break;
+            case HoldGesture.Action.CancelScheduled:
+                timer.Stop();
+                if (gesture.State == HoldGesture.Phase.Combination)
+                    Log.D($"HotkeyHook: key combination on the {(isCommand ? "command" : "dictation")} key, not dictation");
+                break;
+            case HoldGesture.Action.Start:
+                Dispatch(isCommand ? CommandPressed : DictationPressed);
+                break;
+            case HoldGesture.Action.Stop:
+                Dispatch(isCommand ? CommandReleased : DictationReleased);
+                break;
+            case HoldGesture.Action.Cancel:
+                Log.D($"HotkeyHook: key combination during {(isCommand ? "command" : "dictation")} recording, discarding");
+                Dispatch(isCommand ? CommandCancelled : DictationCancelled);
+                break;
+        }
     }
 
     private void Dispatch(Action? handler)

@@ -18,11 +18,19 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
                 <TextBlock Text="Dictation (hold to talk)" VerticalAlignment="Center" Grid.Row="0" Grid.Column="0" />
                 <ComboBox x:Name="HotkeyCombo" Grid.Row="0" Grid.Column="1" Margin="0,2" />
                 <TextBlock Text="Command mode (hold)" VerticalAlignment="Center" Grid.Row="1" Grid.Column="0" />
                 <ComboBox x:Name="CommandHotkeyCombo" Grid.Row="1" Grid.Column="1" Margin="0,2" />
+                <TextBlock Text="Hold before recording" VerticalAlignment="Center" Grid.Row="2" Grid.Column="0"
+                           ToolTip="Quick taps and key combinations (e.g. AltGr+2 for @) never start a recording." />
+                <DockPanel Grid.Row="2" Grid.Column="1" Margin="0,2">
+                    <TextBlock x:Name="HoldDelayLabel" DockPanel.Dock="Right" Width="60" TextAlignment="Right" VerticalAlignment="Center" />
+                    <Slider x:Name="HoldDelaySlider" Minimum="0" Maximum="800" TickFrequency="50" IsSnapToTickEnabled="True"
+                            VerticalAlignment="Center" ValueChanged="HoldDelaySlider_ValueChanged" />
+                </DockPanel>
             </Grid>
 
             <TextBlock Text="Audio" FontWeight="Bold" Margin="0,0,0,6" />

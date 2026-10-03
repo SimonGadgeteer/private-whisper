@@ -86,6 +86,13 @@ public partial class SettingsWindow : Window
         LaunchAtLoginCheck.IsChecked = config.LaunchAtLogin;
         HistoryLoggingCheck.IsChecked = config.HistoryLoggingEnabled;
         CorrectionLearningCheck.IsChecked = config.CorrectionLearningEnabled;
+        HoldDelaySlider.Value = Math.Clamp(config.HotkeyHoldDelayMs, 0, 800);
+        HoldDelayLabel.Text = $"{(int)HoldDelaySlider.Value} ms";
+    }
+
+    private void HoldDelaySlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+    {
+        if (HoldDelayLabel != null) HoldDelayLabel.Text = $"{(int)e.NewValue} ms";
     }
 
     private static void SelectById(ComboBox combo, string? id)
@@ -173,6 +180,7 @@ public partial class SettingsWindow : Window
             c.LaunchAtLogin = LaunchAtLoginCheck.IsChecked == true;
             c.HistoryLoggingEnabled = HistoryLoggingCheck.IsChecked == true;
             c.CorrectionLearningEnabled = CorrectionLearningCheck.IsChecked == true;
+            c.HotkeyHoldDelayMs = (int)HoldDelaySlider.Value;
         });
         Close();
     }

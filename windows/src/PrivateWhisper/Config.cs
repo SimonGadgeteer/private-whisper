@@ -97,6 +97,9 @@ public sealed class AppConfig
     /// dictionary terms from the user's manual respellings.</summary>
     public bool CorrectionLearningEnabled { get; set; } = true;
 
+    /// <summary>Push-to-talk keys must be held this long (with no other key) before recording starts.</summary>
+    public int HotkeyHoldDelayMs { get; set; } = 250;
+
     public static Dictionary<string, string> DefaultAppTones() => new()
     {
         ["outlook.exe"] = "formal email register",

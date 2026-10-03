@@ -14,7 +14,7 @@ public static class AudioGate
     public const float MinRms = 0.002f;
 
     public static bool Passes(float[] samples) =>
-        samples.Length / 16000.0 >= MinSeconds && Rms(samples) > MinRms;
+        VoiceActivity.VoicedSeconds(samples) >= VoiceActivity.MinVoicedSeconds;
 
     public static float Rms(float[] samples)
     {

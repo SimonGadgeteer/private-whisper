@@ -74,6 +74,9 @@ public partial class App : Application
         hook = new HotkeyHook();
         hook.DictationPressed += pipeline.HotkeyPressed;
         hook.DictationReleased += pipeline.HotkeyReleased;
+        hook.DictationCancelled += pipeline.HotkeyCancelled;
+        hook.CommandCancelled += pipeline.CommandCancelled;
+        hook.HoldDelay = CurrentHoldDelay();
         hook.CommandPressed += pipeline.CommandPressed;
         hook.CommandReleased += pipeline.CommandReleased;
         hook.Start(CurrentDictationVk(), CurrentCommandVk());
@@ -121,6 +124,9 @@ public partial class App : Application
 
     private uint CurrentDictationVk() => Hotkeys.VirtualKey(configStore.Config.Hotkey);
 
+    private TimeSpan CurrentHoldDelay() =>
+        TimeSpan.FromMilliseconds(Math.Clamp(configStore.Config.HotkeyHoldDelayMs, 0, 1000));
+
     private uint? CurrentCommandVk() =>
         configStore.Config.CommandHotkey == null
             ? null
@@ -129,6 +135,7 @@ public partial class App : Application
     private void OnConfigChanged()
     {
         hook.UpdateKeys(CurrentDictationVk(), CurrentCommandVk());
+        hook.HoldDelay = CurrentHoldDelay();
         overlay.Enabled = configStore.Config.OverlayEnabled;
         LaunchAtLogin.Apply(configStore.Config.LaunchAtLogin);
     }

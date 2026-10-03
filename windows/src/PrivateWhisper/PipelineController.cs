@@ -117,6 +117,9 @@ public sealed class PipelineController
 
     public void HotkeyReleased() => FinishRecording();
 
+    /// <summary>The push-to-talk key was part of a key combination (e.g. AltGr+2 for "@"): drop the audio.</summary>
+    public void HotkeyCancelled() => DiscardRecording("key combination");
+
     // ---- Command mode ----
 
     public async void CommandPressed()
@@ -124,16 +127,17 @@ public sealed class PipelineController
         try
         {
             if (configStore.Config.CommandHotkey == null || !CanStartSession()) return;
+            int pressId = ++commandPressId;
+            commandKeyHeld = true;
             string? selection = await SelectionCapture.GetSelectedTextAsync();
             if (string.IsNullOrEmpty(selection))
             {
                 overlay.Flash("Command mode: select some text first", 2);
                 return;
             }
-            // Re-check: the async selection capture takes ~100ms and the user
-            // may have released the key already — the hook still fires
-            // onRelease, which no-ops if we never started recording.
-            if (!CanStartSession()) return;
+            // The selection capture takes ~100 ms: if the key was released or turned out to be a
+            // key combination meanwhile, starting now would leave the mic running with no release.
+            if (!commandKeyHeld || pressId != commandPressId || !CanStartSession()) return;
             sessionMode = SessionMode.Command;
             sessionSelection = selection;
             StartRecording();
@@ -144,7 +148,29 @@ public sealed class PipelineController
         }
     }
 
-    public void CommandReleased() => FinishRecording();
+    public void CommandReleased()
+    {
+        commandKeyHeld = false;
+        FinishRecording();
+    }
+
+    public void CommandCancelled()
+    {
+        commandKeyHeld = false;
+        DiscardRecording("key combination");
+    }
+
+    private int commandPressId;
+    private bool commandKeyHeld;
+
+    private void DiscardRecording(string reason)
+    {
+        if (!recorder.IsRecording) return;
+        float[] samples = recorder.Stop();
+        tray.SetState(PipelineState.Idle);
+        overlay.HideOverlay();
+        Log.D($"Recording discarded ({reason}): {samples.Length / 16000.0:F2}s audio");
+    }
 
     // ---- Shared pipeline ----
 
@@ -157,13 +183,15 @@ public sealed class PipelineController
             if (!recorder.IsRecording) return;
             float[] samples = recorder.Stop();
             double audioSeconds = samples.Length / 16000.0;
-            Log.D($"Recording stopped: {audioSeconds:F2}s audio, rms={AudioGate.Rms(samples):F4}");
+            double voiced = VoiceActivity.VoicedSeconds(samples);
+            Log.D($"Recording stopped: {audioSeconds:F2}s audio, {voiced:F2}s voiced, rms={AudioGate.Rms(samples):F4}");
 
-            // PRD §7.4: discard empty/near-silent recordings.
-            if (!AudioGate.Passes(samples))
+            // PRD §7.4: discard recordings without speech — silently, no popup (accidental presses).
+            if (voiced < VoiceActivity.MinVoicedSeconds)
             {
                 tray.SetState(PipelineState.Idle);
-                overlay.Flash("Nothing heard", 1.5);
+                overlay.HideOverlay();
+                Log.D("Discarded: no speech");
                 return;
             }
 
@@ -178,10 +206,12 @@ public sealed class PipelineController
             TranscriptionResult result = await transcriber.TranscribeAsync(samples, config.Dictionary);
             double transcriptionSeconds = stopwatch.Elapsed.TotalSeconds;
 
-            if (string.IsNullOrEmpty(result.Text))
+            // Whisper echoes its prompt (the dictionary) on clips without real speech.
+            if (string.IsNullOrEmpty(result.Text) || PromptEcho.IsEcho(result.Text, config.Dictionary))
             {
                 tray.SetState(PipelineState.Idle);
-                overlay.Flash("Nothing heard", 1.5);
+                overlay.HideOverlay();
+                Log.D(string.IsNullOrEmpty(result.Text) ? "Discarded: empty transcript" : "Discarded: transcript only repeated dictionary words");
                 return;
             }
 
