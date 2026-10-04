@@ -77,12 +77,23 @@ struct SettingsView: View {
                 Text("If iOS refuses the Neural Engine while Private Whisper is in the background, the same recording is transcribed again on the CPU. A smaller model is faster there. See Diagnostics.")
             }
             Section("About") {
+                LabeledContent("Version", value: Self.versionText)
+                    .textSelection(.enabled)
                 Text("Private Whisper transcribes on this iPhone with WhisperKit (Argmax, MIT) and cleans text with Apple Foundation Models. No audio or text leaves the device. Portions adapted from Dictus (MIT, © 2026 PIVI Solutions). Full notices: THIRD_PARTY_NOTICES.md in the repository.")
                     .font(.footnote)
             }
         }
         .navigationTitle("Settings")
         .onAppear { variant = Settings.modelVariant }
+    }
+
+    /// "0.2.5 (build 5, commit 87f0f59)"
+    static var versionText: String {
+        let info = Bundle.main.infoDictionary ?? [:]
+        let version = info["CFBundleShortVersionString"] as? String ?? "dev"
+        let build = info["CFBundleVersion"] as? String ?? "?"
+        let commit = (info["PWGitCommit"] as? String).flatMap { $0.isEmpty ? nil : $0 }
+        return commit.map { "\(version) (build \(build), commit \($0))" } ?? "\(version) (build \(build))"
     }
 
     private var workingText: String {

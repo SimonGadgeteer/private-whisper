@@ -74,6 +74,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             // or we pick it up when they retry (monitors are installed regardless).
         }
 
+        dlog("Private Whisper \(AppVersion.full) starting")
         dlog("Permissions at startup: mic=\(micGranted) accessibility=\(axGranted)")
         hotkey.choice = configStore.config.hotkey
         hotkey.start()

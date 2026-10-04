@@ -60,6 +60,7 @@ public sealed class TrayController : IDisposable
         menu.Items.Add(new WF.ToolStripMenuItem("Dictionary…", null, (_, _) => OpenDictionary?.Invoke()));
         menu.Items.Add(new WF.ToolStripMenuItem("Models…", null, (_, _) => OpenModels?.Invoke()));
         menu.Items.Add(new WF.ToolStripSeparator());
+        menu.Items.Add(new WF.ToolStripMenuItem("Version " + AppVersion.Full) { Enabled = false });
         menu.Items.Add(new WF.ToolStripMenuItem("Quit Private Whisper", null, (_, _) => QuitRequested?.Invoke()));
 
         notifyIcon = new WF.NotifyIcon

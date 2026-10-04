@@ -53,7 +53,7 @@ public partial class App : Application
             args.Handled = true;
         };
 
-        Log.D($"=== Private Whisper starting (portable={AppConfig.IsPortable}) ===");
+        Log.D($"=== Private Whisper {AppVersion.Full} starting (portable={AppConfig.IsPortable}) ===");
         AudioRecorder.LogDeviceInventory();
 
         configStore = new ConfigStore();

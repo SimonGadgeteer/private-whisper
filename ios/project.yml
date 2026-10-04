@@ -25,8 +25,8 @@ settings:
     SUPPORTS_MACCATALYST: NO
     SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD: NO
     SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD: NO
-    MARKETING_VERSION: "0.1.0"          # one version for app + extension
-    CURRENT_PROJECT_VERSION: "1"
+    MARKETING_VERSION: "0.2.5"          # one version for app + extension
+    CURRENT_PROJECT_VERSION: "5"
     SWIFT_VERSION: "5.0"
     SWIFT_STRICT_CONCURRENCY: minimal
     SWIFT_DEFAULT_ACTOR_ISOLATION: nonisolated
@@ -55,6 +55,7 @@ targets:
         CFBundleDisplayName: Private Whisper
         CFBundleShortVersionString: $(MARKETING_VERSION)
         CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        PWGitCommit: $(PW_GIT_COMMIT)            # passed by scripts/deploy.sh; shown in Settings > About
         LSRequiresIPhoneOS: true
         UILaunchScreen: {}
         UIApplicationSceneManifest:

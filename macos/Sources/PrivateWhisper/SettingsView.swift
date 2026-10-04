@@ -200,6 +200,12 @@ struct SettingsView: View {
                     }
                 }
             }
+
+            Section("About") {
+                LabeledContent("Version", value: AppVersion.version)
+                LabeledContent("Build", value: AppVersion.details)
+                    .textSelection(.enabled)
+            }
         }
         .formStyle(.grouped)
         .frame(width: 480, height: 560)

@@ -27,6 +27,12 @@ mkdir -p "$APP_DIR/Contents/MacOS" "$APP_DIR/Contents/Frameworks" "$APP_DIR/Cont
 
 cp "$BUILD_DIR/$APP_NAME" "$APP_DIR/Contents/MacOS/"
 cp "$PROJECT_DIR/Resources/Info.plist" "$APP_DIR/Contents/"
+# Stamp the exact source revision into the bundle (shown in Settings > About); "-modified" when the
+# app's sources differ from that commit.
+GIT_COMMIT="$(git -C "$PROJECT_DIR" rev-parse --short HEAD 2>/dev/null || echo unknown)"
+git -C "$PROJECT_DIR/.." diff --quiet HEAD -- macos/Sources macos/Resources shared 2>/dev/null || GIT_COMMIT="$GIT_COMMIT-modified"
+/usr/libexec/PlistBuddy -c "Add :PWGitCommit string $GIT_COMMIT" "$APP_DIR/Contents/Info.plist"
+echo "    version: $(/usr/libexec/PlistBuddy -c 'Print CFBundleShortVersionString' "$APP_DIR/Contents/Info.plist") commit $GIT_COMMIT"
 cp "$PROJECT_DIR/Resources/AppIcon.icns" "$APP_DIR/Contents/Resources/"
 cp "$PROJECT_DIR/../shared/prompts/cleanup_prompt.txt" "$APP_DIR/Contents/Resources/"
 cp "$PROJECT_DIR/../shared/prompts/rewrite_prompt.txt" "$APP_DIR/Contents/Resources/"

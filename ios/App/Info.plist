@@ -37,6 +37,8 @@
 	<true/>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Private Whisper records your voice while you dictate. Audio is transcribed on this iPhone and never leaves it.</string>
+	<key>PWGitCommit</key>
+	<string>$(PW_GIT_COMMIT)</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

@@ -17,6 +17,7 @@ xcodegen generate >/dev/null
 xcodebuild -project PrivateWhisper.xcodeproj -scheme PrivateWhisper -configuration Debug \
   -destination "id=$DEVICE" -derivedDataPath build/dd \
   DEVELOPMENT_TEAM="$TEAM" CODE_SIGN_STYLE=Automatic \
+  PW_GIT_COMMIT="$(git rev-parse --short HEAD)$(git diff --quiet HEAD -- . ../shared || echo -modified)" \
   -allowProvisioningUpdates -allowProvisioningDeviceRegistration build \
   | grep -E "error:|BUILD (SUCCEEDED|FAILED)"
 APP=build/dd/Build/Products/Debug-iphoneos/PrivateWhisper.app

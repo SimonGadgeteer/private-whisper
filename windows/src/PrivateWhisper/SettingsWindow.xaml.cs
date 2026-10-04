@@ -23,6 +23,7 @@ public partial class SettingsWindow : Window
         this.configStore = configStore;
         this.overlay = overlay;
         InitializeComponent();
+        VersionText.Text = "Private Whisper " + AppVersion.Full;
         LoadFromConfig();
     }
 

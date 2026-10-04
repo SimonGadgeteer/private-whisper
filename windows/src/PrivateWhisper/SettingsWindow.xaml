@@ -108,10 +108,13 @@
                 <CheckBox x:Name="CorrectionLearningCheck" Content="Suggest dictionary terms from my corrections (experimental)" Margin="0,2" />
             </StackPanel>
 
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+            <DockPanel LastChildFill="False">
+                <TextBlock x:Name="VersionText" DockPanel.Dock="Left" VerticalAlignment="Center" Foreground="Gray" />
+                <StackPanel Orientation="Horizontal" DockPanel.Dock="Right">
                 <Button x:Name="SaveButton" Content="Save" Width="90" Click="SaveButton_Click" />
                 <Button x:Name="CancelButton" Content="Cancel" Width="90" Margin="8,0,0,0" Click="CancelButton_Click" />
-            </StackPanel>
+                </StackPanel>
+            </DockPanel>
 
         </StackPanel>
     </ScrollViewer>

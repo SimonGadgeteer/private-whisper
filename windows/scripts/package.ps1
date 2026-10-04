@@ -57,8 +57,12 @@ New-Item -ItemType Directory -Force -Path $DistDir, $BuildDir | Out-Null
 if (-not $SkipPublish) {
     Write-Host "== dotnet publish (self-contained single-file win-x64) =="
     if (Test-Path $AppDir) { Remove-Item -Recurse -Force $AppDir }
+    # Version and commit go into the exe (shown in Settings and the tray menu).
+    $Commit = (git -C $WindowsDir rev-parse --short HEAD 2>$null)
+    if (-not $Commit) { $Commit = "unknown" }
     dotnet publish (Join-Path $WindowsDir $ProjectRel) `
         -c Release -r win-x64 --self-contained true `
+        -p:Version=$AppVersion -p:SourceRevisionId=$Commit `
         -p:PublishSingleFile=true `
         -p:IncludeNativeLibrariesForSelfExtract=true `
         -o $AppDir

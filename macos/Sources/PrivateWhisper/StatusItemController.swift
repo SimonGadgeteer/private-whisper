@@ -64,6 +64,10 @@ final class StatusItemController {
         menu.addItem(settingsItem)
 
         menu.addItem(.separator())
+        let aboutItem = NSMenuItem(
+            title: "About Private Whisper \(AppVersion.version)", action: #selector(showAbout), keyEquivalent: "")
+        aboutItem.target = self
+        menu.addItem(aboutItem)
         menu.addItem(NSMenuItem(
             title: "Quit Private Whisper", action: #selector(NSApplication.terminate(_:)),
             keyEquivalent: "q"))
@@ -126,6 +130,14 @@ final class StatusItemController {
     @objc private func toggleCleanup() { onToggleCleanup?() }
     @objc private func openSettings() { onOpenSettings?() }
     @objc private func openMainWindow() { onOpenMainWindow?() }
+
+    @objc private func showAbout() {
+        NSApp.activate(ignoringOtherApps: true)
+        NSApp.orderFrontStandardAboutPanel(options: [
+            .applicationVersion: AppVersion.version,
+            .version: AppVersion.details,
+        ])
+    }
 
     @objc private func copyLast() {
         guard let lastDictation else { return }
